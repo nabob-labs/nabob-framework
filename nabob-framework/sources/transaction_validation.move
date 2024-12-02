@@ -139,7 +139,7 @@ module nabob_framework::transaction_validation {
         let max_transaction_fee = txn_gas_price * txn_max_gas_units;
 
         if (!features::transaction_simulation_enhancement_enabled() || !skip_gas_payment(is_simulation, gas_payer)) {
-            if (features::operations_default_to_fa_bob_store_enabled()) {
+            if (features::operations_default_to_fa_bos_store_enabled()) {
                 assert!(
                     nabob_account::is_fungible_balance_at_least(gas_payer, max_transaction_fee),
                     error::invalid_argument(PROLOGUE_ECANT_PAY_GAS_DEPOSIT)
@@ -450,7 +450,7 @@ module nabob_framework::transaction_validation {
         // it's important to maintain the error code consistent with vm
         // to do failed transaction cleanup.
         if (!features::transaction_simulation_enhancement_enabled() || !skip_gas_payment(is_simulation, gas_payer)) {
-            if (features::operations_default_to_fa_bob_store_enabled()) {
+            if (features::operations_default_to_fa_bos_store_enabled()) {
                 assert!(
                     nabob_account::is_fungible_balance_at_least(gas_payer, transaction_fee_amount),
                     error::out_of_range(PROLOGUE_ECANT_PAY_GAS_DEPOSIT),

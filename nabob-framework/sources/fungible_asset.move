@@ -81,8 +81,8 @@ module nabob_framework::fungible_asset {
     const EALREADY_REGISTERED: u64 = 29;
     /// Fungible metadata does not exist on this account.
     const EFUNGIBLE_METADATA_EXISTENCE: u64 = 30;
-    /// Cannot register dispatch hook for APT.
-    const EBOB_NOT_DISPATCHABLE: u64 = 31;
+    /// Cannot register dispatch hook for BOS.
+    const EBOS_NOT_DISPATCHABLE: u64 = 31;
     /// Flag for Concurrent Supply not enabled
     const ECONCURRENT_BALANCE_NOT_ENABLED: u64 = 32;
     /// Provided derived_supply function type doesn't meet the signature requirement.
@@ -423,10 +423,10 @@ module nabob_framework::fungible_asset {
     inline fun register_dispatch_function_sanity_check(
         constructor_ref: &ConstructorRef,
     )  {
-        // Cannot register hook for APT.
+        // Cannot register hook for BOS.
         assert!(
             object::address_from_constructor_ref(constructor_ref) != @nabob_fungible_asset,
-            error::permission_denied(EBOB_NOT_DISPATCHABLE)
+            error::permission_denied(EBOS_NOT_DISPATCHABLE)
         );
         assert!(
             !object::can_generate_delete_ref(constructor_ref),
@@ -643,7 +643,7 @@ module nabob_framework::fungible_asset {
 
     fun has_deposit_dispatch_function(metadata: Object<Metadata>): bool acquires DispatchFunctionStore {
         let metadata_addr = object::object_address(&metadata);
-        // Short circuit on APT for better perf
+        // Short circuit on BOS for better perf
         if(metadata_addr != @nabob_fungible_asset && exists<DispatchFunctionStore>(metadata_addr)) {
             option::is_some(&borrow_global<DispatchFunctionStore>(metadata_addr).deposit_function)
         } else {
@@ -663,7 +663,7 @@ module nabob_framework::fungible_asset {
 
     fun has_withdraw_dispatch_function(metadata: Object<Metadata>): bool acquires DispatchFunctionStore {
         let metadata_addr = object::object_address(&metadata);
-        // Short circuit on APT for better perf
+        // Short circuit on BOS for better perf
         if (metadata_addr != @nabob_fungible_asset && exists<DispatchFunctionStore>(metadata_addr)) {
             option::is_some(&borrow_global<DispatchFunctionStore>(metadata_addr).withdraw_function)
         } else {

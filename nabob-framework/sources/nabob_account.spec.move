@@ -107,7 +107,7 @@ spec nabob_framework::nabob_account {
 
     /// Check if the address existed.
     /// Check if the NabobCoin under the address existed.
-    spec assert_account_is_registered_for_apt(addr: address) {
+    spec assert_account_is_registered_for_bos(addr: address) {
         pragma aborts_if_is_partial;
         aborts_if !account::exists_at(addr);
         aborts_if !coin::spec_is_account_registered<NabobCoin>(addr);
@@ -267,7 +267,7 @@ spec nabob_framework::nabob_account {
         ensures exists<nabob_framework::coin::CoinStore<CoinType>>(to);
     }
 
-    spec register_apt(account_signer: &signer) {
+    spec register_bos(account_signer: &signer) {
         // TODO: temporary mockup.
         pragma verify = false;
     }

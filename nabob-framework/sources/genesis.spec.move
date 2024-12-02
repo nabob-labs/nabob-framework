@@ -23,7 +23,7 @@ spec nabob_framework::genesis {
     ///
     /// No.: 3
     /// Requirement: The Nabob coin should be initialized during genesis and only the Nabob framework account should own
-    /// the mint and burn capabilities for the APT token.
+    /// the mint and burn capabilities for the BOS token.
     /// Criticality: Critical
     /// Implementation: Both mint and burn capabilities are wrapped inside the stake::NabobCoinCapabilities and
     /// transaction_fee::NabobCoinCapabilities resources which are stored under the nabob framework account.
@@ -100,7 +100,7 @@ spec nabob_framework::genesis {
 
     spec initialize_nabob_coin {
         // property 3: The Nabob coin should be initialized during genesis and only the Nabob framework account should
-        // own the mint and burn capabilities for the APT token.
+        // own the mint and burn capabilities for the BOS token.
         /// [high-level-req-3]
         requires !exists<stake::NabobCoinCapabilities>(@nabob_framework);
         ensures exists<stake::NabobCoinCapabilities>(@nabob_framework);

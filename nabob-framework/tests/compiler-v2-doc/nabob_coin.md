@@ -210,7 +210,7 @@ Can only called during genesis to initialize the Nabob coin.
     <b>let</b> (burn_cap, freeze_cap, mint_cap) = <a href="coin.md#0x1_coin_initialize_with_parallelizable_supply">coin::initialize_with_parallelizable_supply</a>&lt;<a href="nabob_coin.md#0x1_nabob_coin_NabobCoin">NabobCoin</a>&gt;(
         nabob_framework,
         <a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/string.md#0x1_string_utf8">string::utf8</a>(b"Nabob Coin"),
-        <a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/string.md#0x1_string_utf8">string::utf8</a>(b"BOB"),
+        <a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/string.md#0x1_string_utf8">string::utf8</a>(b"BOS"),
         8, // decimals
         <b>true</b>, // monitor_supply
     );
@@ -286,7 +286,7 @@ and accounts have been initialized during genesis.
 
 Can only be called during genesis for tests to grant mint capability to nabob framework and core resources
 accounts.
-Expects account and BOB store to be registered before calling.
+Expects account and BOS store to be registered before calling.
 
 
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="nabob_coin.md#0x1_nabob_coin_configure_accounts_for_test">configure_accounts_for_test</a>(nabob_framework: &<a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/signer.md#0x1_signer">signer</a>, core_resources: &<a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/signer.md#0x1_signer">signer</a>, mint_cap: <a href="coin.md#0x1_coin_MintCapability">coin::MintCapability</a>&lt;<a href="nabob_coin.md#0x1_nabob_coin_NabobCoin">nabob_coin::NabobCoin</a>&gt;)
@@ -480,7 +480,7 @@ Claim the delegated mint capability and destroy the delegated token.
 
 <tr>
 <td>1</td>
-<td>The native token, BOB, must be initialized during genesis.</td>
+<td>The native token, BOS, must be initialized during genesis.</td>
 <td>Medium</td>
 <td>The initialize function is only called once, during genesis.</td>
 <td>Formally verified via <a href="#high-level-req-1">initialize</a>.</td>
@@ -488,18 +488,18 @@ Claim the delegated mint capability and destroy the delegated token.
 
 <tr>
 <td>2</td>
-<td>The BOB coin may only be created exactly once.</td>
+<td>The BOS coin may only be created exactly once.</td>
 <td>Medium</td>
 <td>The initialization function may only be called once.</td>
-<td>Enforced through the <a href="https://github.com/nabob-labs/nabob-core/blob/main/nabob-move/framework/nabob-framework/sources/coin.move">coin</a> module, which has been audited.</td>
+<td>Enforced through the <a href="https://github.com/nabob-labs/nabob/blob/main/nabob-move/framework/nabob-framework/sources/coin.move">coin</a> module, which has been audited.</td>
 </tr>
 
 <tr>
 <td>4</td>
-<td>Any type of operation on the BOB coin should fail if the user has not registered for the coin.</td>
+<td>Any type of operation on the BOS coin should fail if the user has not registered for the coin.</td>
 <td>Medium</td>
 <td>Coin operations may succeed only on valid user coin registration.</td>
-<td>Enforced through the <a href="https://github.com/nabob-labs/nabob-core/blob/main/nabob-move/framework/nabob-framework/sources/coin.move">coin</a> module, which has been audited.</td>
+<td>Enforced through the <a href="https://github.com/nabob-labs/nabob/blob/main/nabob-move/framework/nabob-framework/sources/coin.move">coin</a> module, which has been audited.</td>
 </tr>
 
 </table>
@@ -532,7 +532,7 @@ Claim the delegated mint capability and destroy the delegated token.
 <pre><code><b>let</b> addr = <a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/signer.md#0x1_signer_address_of">signer::address_of</a>(nabob_framework);
 <b>aborts_if</b> addr != @nabob_framework;
 <b>aborts_if</b> !<a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/string.md#0x1_string_spec_internal_check_utf8">string::spec_internal_check_utf8</a>(b"Nabob Coin");
-<b>aborts_if</b> !<a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/string.md#0x1_string_spec_internal_check_utf8">string::spec_internal_check_utf8</a>(b"BOB");
+<b>aborts_if</b> !<a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/string.md#0x1_string_spec_internal_check_utf8">string::spec_internal_check_utf8</a>(b"BOS");
 <b>aborts_if</b> <b>exists</b>&lt;<a href="nabob_coin.md#0x1_nabob_coin_MintCapStore">MintCapStore</a>&gt;(addr);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="coin.md#0x1_coin_CoinInfo">coin::CoinInfo</a>&lt;<a href="nabob_coin.md#0x1_nabob_coin_NabobCoin">NabobCoin</a>&gt;&gt;(addr);
 <b>aborts_if</b> !<b>exists</b>&lt;<a href="aggregator_factory.md#0x1_aggregator_factory_AggregatorFactory">aggregator_factory::AggregatorFactory</a>&gt;(addr);

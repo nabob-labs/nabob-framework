@@ -4,7 +4,7 @@
 # Module `0x1::vesting`
 
 
-Simple vesting contract that allows specifying how much BOB coins should be vesting in each fixed-size period. The
+Simple vesting contract that allows specifying how much BOS coins should be vesting in each fixed-size period. The
 vesting contract also comes with staking and allows shareholders to withdraw rewards anytime.
 
 Vesting schedule is represented as a vector of distributions. For example, a vesting schedule of
@@ -2166,7 +2166,7 @@ Create a vesting contract with a given configurations.
         !<a href="system_addresses.md#0x1_system_addresses_is_reserved_address">system_addresses::is_reserved_address</a>(withdrawal_address),
         <a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/error.md#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="vesting.md#0x1_vesting_EINVALID_WITHDRAWAL_ADDRESS">EINVALID_WITHDRAWAL_ADDRESS</a>),
     );
-    assert_account_is_registered_for_apt(withdrawal_address);
+    assert_account_is_registered_for_bos(withdrawal_address);
     <b>assert</b>!(<a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/vector.md#0x1_vector_length">vector::length</a>(shareholders) &gt; 0, <a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/error.md#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="vesting.md#0x1_vesting_ENO_SHAREHOLDERS">ENO_SHAREHOLDERS</a>));
     <b>assert</b>!(
         <a href="../../../nabob-stdlib/tests/compiler-v2-doc/simple_map.md#0x1_simple_map_length">simple_map::length</a>(&buy_ins) == <a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/vector.md#0x1_vector_length">vector::length</a>(shareholders),
@@ -2913,9 +2913,9 @@ has already been terminated.
     shareholder: <b>address</b>,
     new_beneficiary: <b>address</b>,
 ) <b>acquires</b> <a href="vesting.md#0x1_vesting_VestingContract">VestingContract</a> {
-    // Verify that the beneficiary <a href="account.md#0x1_account">account</a> is set up <b>to</b> receive BOB. This is a requirement so <a href="vesting.md#0x1_vesting_distribute">distribute</a>() wouldn't
-    // fail and <a href="block.md#0x1_block">block</a> all other accounts from receiving BOB <b>if</b> one beneficiary is not registered.
-    assert_account_is_registered_for_apt(new_beneficiary);
+    // Verify that the beneficiary <a href="account.md#0x1_account">account</a> is set up <b>to</b> receive BOS. This is a requirement so <a href="vesting.md#0x1_vesting_distribute">distribute</a>() wouldn't
+    // fail and <a href="block.md#0x1_block">block</a> all other accounts from receiving BOS <b>if</b> one beneficiary is not registered.
+    assert_account_is_registered_for_bos(new_beneficiary);
 
     <b>let</b> vesting_contract = <b>borrow_global_mut</b>&lt;<a href="vesting.md#0x1_vesting_VestingContract">VestingContract</a>&gt;(contract_address);
     <a href="vesting.md#0x1_vesting_verify_admin">verify_admin</a>(admin, vesting_contract);
@@ -3210,7 +3210,7 @@ This address should be deterministic for the same admin and vesting contract cre
     <a href="../../../nabob-stdlib/../move-stdlib/tests/compiler-v2-doc/vector.md#0x1_vector_append">vector::append</a>(&<b>mut</b> seed, contract_creation_seed);
 
     <b>let</b> (account_signer, signer_cap) = <a href="account.md#0x1_account_create_resource_account">account::create_resource_account</a>(admin, seed);
-    // Register the <a href="vesting.md#0x1_vesting">vesting</a> contract <a href="account.md#0x1_account">account</a> <b>to</b> receive BOB <b>as</b> it'll be sent <b>to</b> it when claiming unlocked <a href="stake.md#0x1_stake">stake</a> from
+    // Register the <a href="vesting.md#0x1_vesting">vesting</a> contract <a href="account.md#0x1_account">account</a> <b>to</b> receive BOS <b>as</b> it'll be sent <b>to</b> it when claiming unlocked <a href="stake.md#0x1_stake">stake</a> from
     // the underlying staking contract.
     <a href="coin.md#0x1_coin_register">coin::register</a>&lt;NabobCoin&gt;(&account_signer);
 
@@ -3423,7 +3423,7 @@ This address should be deterministic for the same admin and vesting contract cre
 <td>The shareholders should be able to start vesting only after the vesting cliff and the first vesting period have transpired.</td>
 <td>High</td>
 <td>The end of the vesting cliff is stored under VestingContract.vesting_schedule.start_timestamp_secs. The vest function always checks that timestamp::now_seconds is greater or equal to the end of the vesting cliff period.</td>
-<td>Audited the check for the end of vesting cliff: <a href="https://github.com/nabob-labs/nabob-core/blob/main/nabob-move/framework/nabob-framework/sources/vesting.move#L566">vest</a> module.</td>
+<td>Audited the check for the end of vesting cliff: <a href="https://github.com/nabob-labs/nabob/blob/main/nabob-move/framework/nabob-framework/sources/vesting.move#L566">vest</a> module.</td>
 </tr>
 
 <tr>
