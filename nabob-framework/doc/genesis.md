@@ -440,7 +440,7 @@ Only called for testnets and e2e tests.
 
     <b>let</b> core_resources = <a href="account.md#0x1_account_create_account">account::create_account</a>(@core_resources);
     <a href="account.md#0x1_account_rotate_authentication_key_internal">account::rotate_authentication_key_internal</a>(&core_resources, core_resources_auth_key);
-    <a href="nabob_account.md#0x1_nabob_account_register_bos">nabob_account::register_bos</a>(&core_resources); // registers BOS store
+    <a href="nabob_account.md#0x1_nabob_account_register_bob">nabob_account::register_bob</a>(&core_resources); // registers BOB store
     <a href="nabob_coin.md#0x1_nabob_coin_configure_accounts_for_test">nabob_coin::configure_accounts_for_test</a>(nabob_framework, &core_resources, mint_cap);
 }
 </code></pre>
@@ -935,7 +935,7 @@ The last step of genesis.
 
 <tr>
 <td>3</td>
-<td>The Nabob coin should be initialized during genesis and only the Nabob framework account should own the mint and burn capabilities for the BOS token.</td>
+<td>The Nabob coin should be initialized during genesis and only the Nabob framework account should own the mint and burn capabilities for the BOB token.</td>
 <td>Critical</td>
 <td>Both mint and burn capabilities are wrapped inside the stake::NabobCoinCapabilities and transaction_fee::NabobCoinCapabilities resources which are stored under the nabob framework account.</td>
 <td>Formally verified via <a href="#high-level-req-3">initialize_nabob_coin</a>.</td>

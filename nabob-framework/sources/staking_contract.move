@@ -965,10 +965,10 @@ module nabob_framework::staking_contract {
     use nabob_framework::stake::with_rewards;
 
     #[test_only]
-    const INITIAL_BALANCE: u64 = 100000000000000; // 1M BOS coins with 8 decimals.
+    const INITIAL_BALANCE: u64 = 100000000000000; // 1M BOB coins with 8 decimals.
 
     #[test_only]
-    const MAXIMUM_STAKE: u64 = 100000000000000000; // 1B BOS coins with 8 decimals.
+    const MAXIMUM_STAKE: u64 = 100000000000000000; // 1B BOB coins with 8 decimals.
 
     #[test_only]
     const MODULE_EVENT: u64 = 26;

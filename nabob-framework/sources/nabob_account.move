@@ -21,8 +21,8 @@ module nabob_framework::nabob_account {
 
     /// Account does not exist.
     const EACCOUNT_NOT_FOUND: u64 = 1;
-    /// Account is not registered to receive BOS.
-    const EACCOUNT_NOT_REGISTERED_FOR_BOS: u64 = 2;
+    /// Account is not registered to receive BOB.
+    const EACCOUNT_NOT_REGISTERED_FOR_BOB: u64 = 2;
     /// Account opted out of receiving coins that they did not register to receive.
     const EACCOUNT_DOES_NOT_ACCEPT_DIRECT_COIN_TRANSFERS: u64 = 3;
     /// Account opted out of directly receiving NFT tokens.
@@ -55,10 +55,10 @@ module nabob_framework::nabob_account {
 
     public entry fun create_account(auth_key: address) {
         let account_signer = account::create_account(auth_key);
-        register_bos(&account_signer);
+        register_bob(&account_signer);
     }
 
-    /// Batch version of BOS transfer.
+    /// Batch version of BOB transfer.
     public entry fun batch_transfer(source: &signer, recipients: vector<address>, amounts: vector<u64>) {
         let recipients_len = vector::length(&recipients);
         assert!(
@@ -72,17 +72,17 @@ module nabob_framework::nabob_account {
         });
     }
 
-    /// Convenient function to transfer BOS to a recipient account that might not exist.
-    /// This would create the recipient account first, which also registers it to receive BOS, before transferring.
+    /// Convenient function to transfer BOB to a recipient account that might not exist.
+    /// This would create the recipient account first, which also registers it to receive BOB, before transferring.
     public entry fun transfer(source: &signer, to: address, amount: u64) {
         if (!account::exists_at(to)) {
             create_account(to)
         };
 
-        if (features::operations_default_to_fa_bos_store_enabled()) {
+        if (features::operations_default_to_fa_bob_store_enabled()) {
             fungible_transfer_only(source, to, amount)
         } else {
-            // Resource accounts can be created without registering them to receive BOS.
+            // Resource accounts can be created without registering them to receive BOB.
             // This conveniently does the registration if necessary.
             if (!coin::is_account_registered<NabobCoin>(to)) {
                 coin::register<NabobCoin>(&create_signer(to));
@@ -171,9 +171,9 @@ module nabob_framework::nabob_account {
         assert!(account::exists_at(addr), error::not_found(EACCOUNT_NOT_FOUND));
     }
 
-    public fun assert_account_is_registered_for_bos(addr: address) {
+    public fun assert_account_is_registered_for_bob(addr: address) {
         assert_account_exists(addr);
-        assert!(coin::is_account_registered<NabobCoin>(addr), error::not_found(EACCOUNT_NOT_REGISTERED_FOR_BOS));
+        assert!(coin::is_account_registered<NabobCoin>(addr), error::not_found(EACCOUNT_NOT_REGISTERED_FOR_BOB));
     }
 
     /// Set whether `account` can receive direct transfers of coins that they have not explicitly registered to receive.
@@ -221,21 +221,21 @@ module nabob_framework::nabob_account {
             borrow_global<DirectTransferConfig>(account).allow_arbitrary_coin_transfers
     }
 
-    public(friend) fun register_bos(account_signer: &signer) {
-        if (features::new_accounts_default_to_fa_bos_store_enabled()) {
+    public(friend) fun register_bob(account_signer: &signer) {
+        if (features::new_accounts_default_to_fa_bob_store_enabled()) {
             ensure_primary_fungible_store_exists(signer::address_of(account_signer));
         } else {
             coin::register<NabobCoin>(account_signer);
         }
     }
 
-    /// BOS Primary Fungible Store specific specialized functions,
-    /// Utilized internally once migration of BOS to FungibleAsset is complete.
+    /// BOB Primary Fungible Store specific specialized functions,
+    /// Utilized internally once migration of BOB to FungibleAsset is complete.
 
-    /// Convenient function to transfer BOS to a recipient account that might not exist.
-    /// This would create the recipient BOS PFS first, which also registers it to receive BOS, before transferring.
+    /// Convenient function to transfer BOB to a recipient account that might not exist.
+    /// This would create the recipient BOB PFS first, which also registers it to receive BOB, before transferring.
     /// TODO: once migration is complete, rename to just "transfer_only" and make it an entry function (for cheapest way
-    /// to transfer BOS) - if we want to allow BOS PFS without account itself
+    /// to transfer BOB) - if we want to allow BOB PFS without account itself
     public(friend) entry fun fungible_transfer_only(
         source: &signer, to: address, amount: u64
     ) {
@@ -244,19 +244,19 @@ module nabob_framework::nabob_account {
 
         // use internal APIs, as they skip:
         // - owner, frozen and dispatchable checks
-        // as BOS cannot be frozen or have dispatch, and PFS cannot be transfered
+        // as BOB cannot be frozen or have dispatch, and PFS cannot be transfered
         // (PFS could potentially be burned. regular transfer would permanently unburn the store.
         // Ignoring the check here has the equivalent of unburning, transfers, and then burning again)
         fungible_asset::deposit_internal(recipient_store, fungible_asset::withdraw_internal(sender_store, amount));
     }
 
-    /// Is balance from BOS Primary FungibleStore at least the given amount
+    /// Is balance from BOB Primary FungibleStore at least the given amount
     public(friend) fun is_fungible_balance_at_least(account: address, amount: u64): bool {
         let store_addr = primary_fungible_store_address(account);
         fungible_asset::is_address_balance_at_least(store_addr, amount)
     }
 
-    /// Burn from BOS Primary FungibleStore
+    /// Burn from BOB Primary FungibleStore
     public(friend) fun burn_from_fungible_store(
         ref: &BurnRef,
         account: address,
@@ -269,7 +269,7 @@ module nabob_framework::nabob_account {
         };
     }
 
-    /// Ensure that BOS Primary FungibleStore exists (and create if it doesn't)
+    /// Ensure that BOB Primary FungibleStore exists (and create if it doesn't)
     inline fun ensure_primary_fungible_store_exists(owner: address): address {
         let store_addr = primary_fungible_store_address(owner);
         if (fungible_asset::store_exists(store_addr)) {
@@ -279,7 +279,7 @@ module nabob_framework::nabob_account {
         }
     }
 
-    /// Address of BOS Primary Fungible Store
+    /// Address of BOB Primary Fungible Store
     inline fun primary_fungible_store_address(account: address): address {
         object::create_user_derived_object_address(account, @nabob_fungible_asset)
     }
@@ -468,13 +468,13 @@ module nabob_framework::nabob_account {
         use nabob_framework::fungible_asset::Metadata;
         use nabob_framework::nabob_coin;
 
-        nabob_coin::ensure_initialized_with_bos_fa_metadata_for_test();
+        nabob_coin::ensure_initialized_with_bob_fa_metadata_for_test();
 
-        let bos_metadata = object::address_to_object<Metadata>(@nabob_fungible_asset);
+        let bob_metadata = object::address_to_object<Metadata>(@nabob_fungible_asset);
         let user_addr = signer::address_of(user);
-        assert!(primary_fungible_store_address(user_addr) == primary_fungible_store::primary_store_address(user_addr, bos_metadata), 1);
+        assert!(primary_fungible_store_address(user_addr) == primary_fungible_store::primary_store_address(user_addr, bob_metadata), 1);
 
         ensure_primary_fungible_store_exists(user_addr);
-        assert!(primary_fungible_store::primary_store_exists(user_addr, bos_metadata), 2);
+        assert!(primary_fungible_store::primary_store_exists(user_addr, bob_metadata), 2);
     }
 }

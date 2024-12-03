@@ -844,12 +844,12 @@ Cannot destroy fungible stores with a non-zero balance.
 
 
 
-<a id="0x1_fungible_asset_EBOS_NOT_DISPATCHABLE"></a>
+<a id="0x1_fungible_asset_EBOB_NOT_DISPATCHABLE"></a>
 
-Cannot register dispatch hook for BOS.
+Cannot register dispatch hook for BOB.
 
 
-<pre><code><b>const</b> <a href="fungible_asset.md#0x1_fungible_asset_EBOS_NOT_DISPATCHABLE">EBOS_NOT_DISPATCHABLE</a>: u64 = 31;
+<pre><code><b>const</b> <a href="fungible_asset.md#0x1_fungible_asset_EBOB_NOT_DISPATCHABLE">EBOB_NOT_DISPATCHABLE</a>: u64 = 31;
 </code></pre>
 
 
@@ -1553,10 +1553,10 @@ Check the requirements for registering a dispatchable function.
 <pre><code>inline <b>fun</b> <a href="fungible_asset.md#0x1_fungible_asset_register_dispatch_function_sanity_check">register_dispatch_function_sanity_check</a>(
     constructor_ref: &ConstructorRef,
 )  {
-    // Cannot register hook for BOS.
+    // Cannot register hook for BOB.
     <b>assert</b>!(
         <a href="object.md#0x1_object_address_from_constructor_ref">object::address_from_constructor_ref</a>(constructor_ref) != @nabob_fungible_asset,
-        <a href="../../move-stdlib/doc/error.md#0x1_error_permission_denied">error::permission_denied</a>(<a href="fungible_asset.md#0x1_fungible_asset_EBOS_NOT_DISPATCHABLE">EBOS_NOT_DISPATCHABLE</a>)
+        <a href="../../move-stdlib/doc/error.md#0x1_error_permission_denied">error::permission_denied</a>(<a href="fungible_asset.md#0x1_fungible_asset_EBOB_NOT_DISPATCHABLE">EBOB_NOT_DISPATCHABLE</a>)
     );
     <b>assert</b>!(
         !<a href="object.md#0x1_object_can_generate_delete_ref">object::can_generate_delete_ref</a>(constructor_ref),
@@ -2273,7 +2273,7 @@ Return whether a fungible asset type is dispatchable.
 
 <pre><code><b>fun</b> <a href="fungible_asset.md#0x1_fungible_asset_has_deposit_dispatch_function">has_deposit_dispatch_function</a>(metadata: Object&lt;<a href="fungible_asset.md#0x1_fungible_asset_Metadata">Metadata</a>&gt;): bool <b>acquires</b> <a href="fungible_asset.md#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a> {
     <b>let</b> metadata_addr = <a href="object.md#0x1_object_object_address">object::object_address</a>(&metadata);
-    // Short circuit on BOS for better perf
+    // Short circuit on BOB for better perf
     <b>if</b>(metadata_addr != @nabob_fungible_asset && <b>exists</b>&lt;<a href="fungible_asset.md#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata_addr)) {
         <a href="../../move-stdlib/doc/option.md#0x1_option_is_some">option::is_some</a>(&<b>borrow_global</b>&lt;<a href="fungible_asset.md#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata_addr).deposit_function)
     } <b>else</b> {
@@ -2333,7 +2333,7 @@ Return whether a fungible asset type is dispatchable.
 
 <pre><code><b>fun</b> <a href="fungible_asset.md#0x1_fungible_asset_has_withdraw_dispatch_function">has_withdraw_dispatch_function</a>(metadata: Object&lt;<a href="fungible_asset.md#0x1_fungible_asset_Metadata">Metadata</a>&gt;): bool <b>acquires</b> <a href="fungible_asset.md#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a> {
     <b>let</b> metadata_addr = <a href="object.md#0x1_object_object_address">object::object_address</a>(&metadata);
-    // Short circuit on BOS for better perf
+    // Short circuit on BOB for better perf
     <b>if</b> (metadata_addr != @nabob_fungible_asset && <b>exists</b>&lt;<a href="fungible_asset.md#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata_addr)) {
         <a href="../../move-stdlib/doc/option.md#0x1_option_is_some">option::is_some</a>(&<b>borrow_global</b>&lt;<a href="fungible_asset.md#0x1_fungible_asset_DispatchFunctionStore">DispatchFunctionStore</a>&gt;(metadata_addr).withdraw_function)
     } <b>else</b> {

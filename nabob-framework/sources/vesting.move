@@ -1,5 +1,5 @@
 ///
-/// Simple vesting contract that allows specifying how much BOS coins should be vesting in each fixed-size period. The
+/// Simple vesting contract that allows specifying how much BOB coins should be vesting in each fixed-size period. The
 /// vesting contract also comes with staking and allows shareholders to withdraw rewards anytime.
 ///
 /// Vesting schedule is represented as a vector of distributions. For example, a vesting schedule of
@@ -45,7 +45,7 @@ module nabob_framework::vesting {
     use nabob_std::simple_map::{Self, SimpleMap};
 
     use nabob_framework::account::{Self, SignerCapability, new_event_handle};
-    use nabob_framework::nabob_account::{Self, assert_account_is_registered_for_bos};
+    use nabob_framework::nabob_account::{Self, assert_account_is_registered_for_bob};
     use nabob_framework::nabob_coin::NabobCoin;
     use nabob_framework::coin::{Self, Coin};
     use nabob_framework::event::{EventHandle, emit, emit_event};
@@ -539,7 +539,7 @@ module nabob_framework::vesting {
             !system_addresses::is_reserved_address(withdrawal_address),
             error::invalid_argument(EINVALID_WITHDRAWAL_ADDRESS),
         );
-        assert_account_is_registered_for_bos(withdrawal_address);
+        assert_account_is_registered_for_bob(withdrawal_address);
         assert!(vector::length(shareholders) > 0, error::invalid_argument(ENO_SHAREHOLDERS));
         assert!(
             simple_map::length(&buy_ins) == vector::length(shareholders),
@@ -1006,9 +1006,9 @@ module nabob_framework::vesting {
         shareholder: address,
         new_beneficiary: address,
     ) acquires VestingContract {
-        // Verify that the beneficiary account is set up to receive BOS. This is a requirement so distribute() wouldn't
-        // fail and block all other accounts from receiving BOS if one beneficiary is not registered.
-        assert_account_is_registered_for_bos(new_beneficiary);
+        // Verify that the beneficiary account is set up to receive BOB. This is a requirement so distribute() wouldn't
+        // fail and block all other accounts from receiving BOB if one beneficiary is not registered.
+        assert_account_is_registered_for_bob(new_beneficiary);
 
         let vesting_contract = borrow_global_mut<VestingContract>(contract_address);
         verify_admin(admin, vesting_contract);
@@ -1143,7 +1143,7 @@ module nabob_framework::vesting {
         vector::append(&mut seed, contract_creation_seed);
 
         let (account_signer, signer_cap) = account::create_resource_account(admin, seed);
-        // Register the vesting contract account to receive BOS as it'll be sent to it when claiming unlocked stake from
+        // Register the vesting contract account to receive BOB as it'll be sent to it when claiming unlocked stake from
         // the underlying staking contract.
         coin::register<NabobCoin>(&account_signer);
 
@@ -1194,10 +1194,10 @@ module nabob_framework::vesting {
     use nabob_std::math64::min;
 
     #[test_only]
-    const MIN_STAKE: u64 = 100000000000000; // 1M BOS coins with 8 decimals.
+    const MIN_STAKE: u64 = 100000000000000; // 1M BOB coins with 8 decimals.
 
     #[test_only]
-    const GRANT_AMOUNT: u64 = 20000000000000000; // 200M BOS coins with 8 decimals.
+    const GRANT_AMOUNT: u64 = 20000000000000000; // 200M BOB coins with 8 decimals.
 
     #[test_only]
     const VESTING_SCHEDULE_CLIFF: u64 = 31536000; // 1 year

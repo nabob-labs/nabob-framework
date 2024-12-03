@@ -42,7 +42,7 @@ module nabob_framework::nabob_coin {
         let (burn_cap, freeze_cap, mint_cap) = coin::initialize_with_parallelizable_supply<NabobCoin>(
             nabob_framework,
             string::utf8(b"Nabob Coin"),
-            string::utf8(b"BOS"),
+            string::utf8(b"BOB"),
             8, // decimals
             true, // monitor_supply
         );
@@ -69,7 +69,7 @@ module nabob_framework::nabob_coin {
 
     /// Can only be called during genesis for tests to grant mint capability to nabob framework and core resources
     /// accounts.
-    /// Expects account and BOS store to be registered before calling.
+    /// Expects account and BOB store to be registered before calling.
     public(friend) fun configure_accounts_for_test(
         nabob_framework: &signer,
         core_resources: &signer,
@@ -157,8 +157,8 @@ module nabob_framework::nabob_coin {
     use nabob_framework::fungible_asset::FungibleAsset;
 
     #[test_only]
-    public fun mint_bos_fa_for_test(amount: u64): FungibleAsset acquires MintCapStore {
-        ensure_initialized_with_bos_fa_metadata_for_test();
+    public fun mint_bob_fa_for_test(amount: u64): FungibleAsset acquires MintCapStore {
+        ensure_initialized_with_bob_fa_metadata_for_test();
         coin::coin_to_fungible_asset(
             coin::mint(
                 amount,
@@ -168,7 +168,7 @@ module nabob_framework::nabob_coin {
     }
 
     #[test_only]
-    public fun ensure_initialized_with_bos_fa_metadata_for_test() {
+    public fun ensure_initialized_with_bob_fa_metadata_for_test() {
         let nabob_framework = account::create_signer_for_test(@nabob_framework);
         if (!exists<MintCapStore>(@nabob_framework)) {
             if (!aggregator_factory::aggregator_factory_exists_for_testing()) {

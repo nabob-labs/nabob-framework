@@ -104,8 +104,8 @@ module nabob_framework::coin {
     /// The coin converison map is not created yet.
     const ECOIN_CONVERSION_MAP_NOT_FOUND: u64 = 27;
 
-    /// BOS pairing is not eanbled yet.
-    const EBOS_PAIRING_IS_NOT_ENABLED: u64 = 28;
+    /// BOB pairing is not eanbled yet.
+    const EBOB_PAIRING_IS_NOT_ENABLED: u64 = 28;
 
     //
     // Constants
@@ -291,7 +291,7 @@ module nabob_framework::coin {
         };
     }
 
-    /// Create BOS pairing by passing `NabobCoin`.
+    /// Create BOB pairing by passing `NabobCoin`.
     public entry fun create_pairing<CoinType>(
         nabob_framework: &signer
     ) acquires CoinConversionMap, CoinInfo {
@@ -299,11 +299,11 @@ module nabob_framework::coin {
         create_and_return_paired_metadata_if_not_exist<CoinType>(true);
     }
 
-    inline fun is_bos<CoinType>(): bool {
+    inline fun is_bob<CoinType>(): bool {
         type_info::type_name<CoinType>() == string::utf8(b"0x1::nabob_coin::NabobCoin")
     }
 
-    inline fun create_and_return_paired_metadata_if_not_exist<CoinType>(allow_bos_creation: bool): Object<Metadata> {
+    inline fun create_and_return_paired_metadata_if_not_exist<CoinType>(allow_bob_creation: bool): Object<Metadata> {
         assert!(
             features::coin_to_fungible_asset_migration_feature_enabled(),
             error::invalid_state(EMIGRATION_FRAMEWORK_NOT_ENABLED)
@@ -312,10 +312,10 @@ module nabob_framework::coin {
         let map = borrow_global_mut<CoinConversionMap>(@nabob_framework);
         let type = type_info::type_of<CoinType>();
         if (!table::contains(&map.coin_to_fungible_asset_map, type)) {
-            let is_bos = is_bos<CoinType>();
-            assert!(!is_bos || allow_bos_creation, error::invalid_state(EBOS_PAIRING_IS_NOT_ENABLED));
+            let is_bob = is_bob<CoinType>();
+            assert!(!is_bob || allow_bob_creation, error::invalid_state(EBOB_PAIRING_IS_NOT_ENABLED));
             let metadata_object_cref =
-                if (is_bos) {
+                if (is_bob) {
                     object::create_sticky_object_at_address(@nabob_framework, @nabob_fungible_asset)
                 } else {
                     object::create_named_object(
@@ -828,8 +828,8 @@ module nabob_framework::coin {
     ): bool {
         let primary_store_address = primary_fungible_store::primary_store_address<Metadata>(account_address, metadata);
         fungible_asset::store_exists(primary_store_address) && (
-            // migration flag is needed, until we start defaulting new accounts to BOS PFS
-            features::new_accounts_default_to_fa_bos_store_enabled() || exists<MigrationFlag>(primary_store_address)
+            // migration flag is needed, until we start defaulting new accounts to BOB PFS
+            features::new_accounts_default_to_fa_bob_store_enabled() || exists<MigrationFlag>(primary_store_address)
         )
     }
 

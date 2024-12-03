@@ -166,7 +166,7 @@ module nabob_framework::genesis {
 
         let core_resources = account::create_account(@core_resources);
         account::rotate_authentication_key_internal(&core_resources, core_resources_auth_key);
-        nabob_account::register_bos(&core_resources); // registers BOS store
+        nabob_account::register_bob(&core_resources); // registers BOB store
         nabob_coin::configure_accounts_for_test(nabob_framework, &core_resources, mint_cap);
     }
 
@@ -527,19 +527,19 @@ module nabob_framework::genesis {
         use nabob_framework::fungible_asset::Metadata;
         use std::features;
 
-        let feature = features::get_new_accounts_default_to_fa_bos_store_feature();
+        let feature = features::get_new_accounts_default_to_fa_bob_store_feature();
         features::change_feature_flags_for_testing(nabob_framework, vector[feature], vector[]);
 
         aggregator_factory::initialize_aggregator_factory_for_test(nabob_framework);
 
         let (burn_cap, mint_cap) = nabob_coin::initialize(nabob_framework);
-        nabob_coin::ensure_initialized_with_bos_fa_metadata_for_test();
+        nabob_coin::ensure_initialized_with_bob_fa_metadata_for_test();
 
         let core_resources = account::create_account(@core_resources);
-        nabob_account::register_bos(&core_resources); // registers BOS store
+        nabob_account::register_bob(&core_resources); // registers BOB store
 
-        let bos_metadata = object::address_to_object<Metadata>(@nabob_fungible_asset);
-        assert!(primary_fungible_store::primary_store_exists(@core_resources, bos_metadata), 2);
+        let bob_metadata = object::address_to_object<Metadata>(@nabob_fungible_asset);
+        assert!(primary_fungible_store::primary_store_exists(@core_resources, bob_metadata), 2);
 
         nabob_coin::configure_accounts_for_test(nabob_framework, &core_resources, mint_cap);
 

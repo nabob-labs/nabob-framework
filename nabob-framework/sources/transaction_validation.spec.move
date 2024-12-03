@@ -381,19 +381,19 @@ spec nabob_framework::transaction_validation {
         // Check burning.
         //   (Check the total supply aggregator when enabled.)
         let amount_to_burn = transaction_fee_amount - storage_fee_refunded;
-        let bos_addr = type_info::type_of<NabobCoin>().account_address;
-        let maybe_bos_supply = global<CoinInfo<NabobCoin>>(bos_addr).supply;
-        let total_supply_enabled = option::spec_is_some(maybe_bos_supply);
-        let bos_supply = option::spec_borrow(maybe_bos_supply);
-        let bos_supply_value = optional_aggregator::optional_aggregator_value(bos_supply);
-        let post post_maybe_bos_supply = global<CoinInfo<NabobCoin>>(bos_addr).supply;
-        let post post_bos_supply = option::spec_borrow(post_maybe_bos_supply);
-        let post post_bos_supply_value = optional_aggregator::optional_aggregator_value(post_bos_supply);
+        let bob_addr = type_info::type_of<NabobCoin>().account_address;
+        let maybe_bob_supply = global<CoinInfo<NabobCoin>>(bob_addr).supply;
+        let total_supply_enabled = option::spec_is_some(maybe_bob_supply);
+        let bob_supply = option::spec_borrow(maybe_bob_supply);
+        let bob_supply_value = optional_aggregator::optional_aggregator_value(bob_supply);
+        let post post_maybe_bob_supply = global<CoinInfo<NabobCoin>>(bob_addr).supply;
+        let post post_bob_supply = option::spec_borrow(post_maybe_bob_supply);
+        let post post_bob_supply_value = optional_aggregator::optional_aggregator_value(post_bob_supply);
 
         aborts_if amount_to_burn > 0 && !exists<NabobCoinCapabilities>(@nabob_framework);
-        aborts_if amount_to_burn > 0 && !exists<CoinInfo<NabobCoin>>(bos_addr);
-        aborts_if amount_to_burn > 0 && total_supply_enabled && bos_supply_value < amount_to_burn;
-        ensures total_supply_enabled ==> bos_supply_value - amount_to_burn == post_bos_supply_value;
+        aborts_if amount_to_burn > 0 && !exists<CoinInfo<NabobCoin>>(bob_addr);
+        aborts_if amount_to_burn > 0 && total_supply_enabled && bob_supply_value < amount_to_burn;
+        ensures total_supply_enabled ==> bob_supply_value - amount_to_burn == post_bob_supply_value;
 
         // Check minting.
         let amount_to_mint = storage_fee_refunded - transaction_fee_amount;
