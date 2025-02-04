@@ -1,16 +1,16 @@
 [package]
-name = "AptosFramework"
+name = "NabobFramework"
 version = "1.0.0"
 
 [addresses]
 std = "0x1"
-aptos_std = "0x1"
-aptos_framework = "0x1"
-aptos_fungible_asset = "0xA"
-aptos_token = "0x3"
+nabob_std = "0x1"
+nabob_framework = "0x1"
+nabob_fungible_asset = "0xA"
+nabob_token = "0x3"
 core_resources = "0xA550C18"
 vm_reserved = "0x0"
 
 [dependencies]
-AptosStdlib = { local = "../aptos-stdlib" }
+NabobStdlib = { local = "../nabob-stdlib" }
 MoveStdlib = { local = "../move-stdlib" }
