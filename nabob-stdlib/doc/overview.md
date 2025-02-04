@@ -13,6 +13,8 @@ This is the reference documentation of the Nabob standard library.
 
 
 -  [`0x1::any`](any.md#0x1_any)
+-  [`0x1::nabob_hash`](hash.md#0x1_nabob_hash)
+-  [`0x1::bcs_stream`](bcs_stream.md#0x1_bcs_stream)
 -  [`0x1::big_vector`](big_vector.md#0x1_big_vector)
 -  [`0x1::bls12381`](bls12381.md#0x1_bls12381)
 -  [`0x1::bls12381_algebra`](bls12381_algebra.md#0x1_bls12381_algebra)
@@ -30,7 +32,6 @@ This is the reference documentation of the Nabob standard library.
 -  [`0x1::math_fixed`](math_fixed.md#0x1_math_fixed)
 -  [`0x1::math_fixed64`](math_fixed64.md#0x1_math_fixed64)
 -  [`0x1::multi_ed25519`](multi_ed25519.md#0x1_multi_ed25519)
--  [`0x1::nabob_hash`](hash.md#0x1_nabob_hash)
 -  [`0x1::pool_u64`](pool_u64.md#0x1_pool_u64)
 -  [`0x1::pool_u64_unbound`](pool_u64_unbound.md#0x1_pool_u64_unbound)
 -  [`0x1::ristretto255`](ristretto255.md#0x1_ristretto255)
@@ -41,6 +42,7 @@ This is the reference documentation of the Nabob standard library.
 -  [`0x1::simple_map`](simple_map.md#0x1_simple_map)
 -  [`0x1::smart_table`](smart_table.md#0x1_smart_table)
 -  [`0x1::smart_vector`](smart_vector.md#0x1_smart_vector)
+-  [`0x1::storage_slots_allocator`](storage_slots_allocator.md#0x1_storage_slots_allocator)
 -  [`0x1::string_utils`](string_utils.md#0x1_string_utils)
 -  [`0x1::table`](table.md#0x1_table)
 -  [`0x1::table_with_length`](table_with_length.md#0x1_table_with_length)

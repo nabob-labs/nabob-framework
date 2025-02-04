@@ -1,12 +1,12 @@
 [package]
-name = "NabobToken"
+name = "AptosToken"
 version = "1.0.0"
 
 [addresses]
 std = "0x1"
-nabob_framework = "0x1"
-nabob_token = "0x3"
+aptos_framework = "0x1"
+aptos_token = "0x3"
 
 [dependencies]
 MoveStdlib = { local = "../move-stdlib" }
-NabobFramework = { local = "../nabob-framework"}
+AptosFramework = { local = "../aptos-framework"}

@@ -31,6 +31,7 @@ module nabob_framework::nabob_governance {
     use nabob_framework::system_addresses;
     use nabob_framework::nabob_coin::{Self, NabobCoin};
     use nabob_framework::consensus_config;
+    use nabob_framework::permissioned_signer;
     use nabob_framework::randomness_config;
     use nabob_framework::reconfiguration_with_dkg;
     use nabob_framework::timestamp;
@@ -62,6 +63,10 @@ module nabob_framework::nabob_governance {
     const EPARTIAL_VOTING_NOT_INITIALIZED: u64 = 13;
     /// The proposal in the argument is not a partial voting proposal.
     const ENOT_PARTIAL_VOTING_PROPOSAL: u64 = 14;
+    /// The proposal has expired.
+    const EPROPOSAL_EXPIRED: u64 = 15;
+    /// Current permissioned signer cannot perform governance operations.
+    const ENO_GOVERNANCE_PERMISSION: u64 = 16;
 
     /// This matches the same enum const in voting. We have to duplicate it as Move doesn't have support for enums yet.
     const PROPOSAL_STATE_SUCCEEDED: u64 = 1;
@@ -166,6 +171,21 @@ module nabob_framework::nabob_governance {
         voting_duration_secs: u64,
     }
 
+    struct GovernancePermission has copy, drop, store {}
+
+    /// Permissions
+    inline fun check_governance_permission(s: &signer) {
+        assert!(
+            permissioned_signer::check_permission_exists(s, GovernancePermission {}),
+            error::permission_denied(ENO_GOVERNANCE_PERMISSION),
+        );
+    }
+
+    /// Grant permission to perform governance operations on behalf of the master signer.
+    public fun grant_permission(master: &signer, permissioned_signer: &signer) {
+        permissioned_signer::authorize_unlimited(master, permissioned_signer, GovernancePermission {})
+    }
+
     /// Can be called during genesis or by the governance itself.
     /// Stores the signer capability for a given address.
     public fun store_signer_cap(
@@ -199,6 +219,7 @@ module nabob_framework::nabob_governance {
         system_addresses::assert_nabob_framework(nabob_framework);
 
         voting::register<GovernanceProposal>(nabob_framework);
+        initialize_partial_voting(nabob_framework);
         move_to(nabob_framework, GovernanceConfig {
             voting_duration_secs,
             min_voting_threshold,
@@ -330,6 +351,23 @@ module nabob_framework::nabob_governance {
         get_voting_power(stake_pool) - used_voting_power
     }
 
+    public fun assert_proposal_expiration(stake_pool: address, proposal_id: u64) {
+        assert_voting_initialization();
+        let proposal_expiration = voting::get_proposal_expiration_secs<GovernanceProposal>(
+            @nabob_framework,
+            proposal_id
+        );
+        // The voter's stake needs to be locked up at least as long as the proposal's expiration.
+        assert!(
+            proposal_expiration <= stake::get_lockup_secs(stake_pool),
+            error::invalid_argument(EINSUFFICIENT_STAKE_LOCKUP),
+        );
+        assert!(
+            timestamp::now_seconds() <= proposal_expiration,
+            error::invalid_argument(EPROPOSAL_EXPIRED),
+        );
+    }
+
     /// Create a single-step proposal with the backing `stake_pool`.
     /// @param execution_hash Required. This is the hash of the resolution script. When the proposal is resolved,
     /// only the exact script with matching hash can be successfully executed.
@@ -376,6 +414,7 @@ module nabob_framework::nabob_governance {
         metadata_hash: vector<u8>,
         is_multi_step_proposal: bool,
     ): u64 acquires GovernanceConfig, GovernanceEvents {
+        check_governance_permission(proposer);
         let proposer_address = signer::address_of(proposer);
         assert!(
             stake::get_delegated_voter(stake_pool) == proposer_address,
@@ -508,18 +547,11 @@ module nabob_framework::nabob_governance {
         voting_power: u64,
         should_pass: bool,
     ) acquires ApprovedExecutionHashes, VotingRecords, VotingRecordsV2, GovernanceEvents {
+        permissioned_signer::assert_master_signer(voter);
         let voter_address = signer::address_of(voter);
         assert!(stake::get_delegated_voter(stake_pool) == voter_address, error::invalid_argument(ENOT_DELEGATED_VOTER));
 
-        // The voter's stake needs to be locked up at least as long as the proposal's expiration.
-        let proposal_expiration = voting::get_proposal_expiration_secs<GovernanceProposal>(
-            @nabob_framework,
-            proposal_id
-        );
-        assert!(
-            stake::get_lockup_secs(stake_pool) >= proposal_expiration,
-            error::invalid_argument(EINSUFFICIENT_STAKE_LOCKUP),
-        );
+        assert_proposal_expiration(stake_pool, proposal_id);
 
         // If a stake pool has already voted on a proposal before partial governance voting is enabled,
         // `get_remaining_voting_power` returns 0.
@@ -811,7 +843,7 @@ module nabob_framework::nabob_governance {
         multi_step: bool,
         use_generic_resolve_function: bool,
     ) acquires ApprovedExecutionHashes, GovernanceConfig, GovernanceResponsbility, VotingRecords, VotingRecordsV2, GovernanceEvents {
-        setup_voting(&nabob_framework, &proposer, &yes_voter, &no_voter);
+        setup_partial_voting(&nabob_framework, &proposer, &yes_voter, &no_voter);
 
         let execution_hash = vector::empty<u8>();
         vector::push_back(&mut execution_hash, 1);
@@ -898,7 +930,7 @@ module nabob_framework::nabob_governance {
         no_voter: signer,
         multi_step: bool,
     ) acquires ApprovedExecutionHashes, GovernanceConfig, GovernanceResponsbility, VotingRecords, VotingRecordsV2, GovernanceEvents {
-        setup_voting(&nabob_framework, &proposer, &yes_voter, &no_voter);
+        setup_partial_voting(&nabob_framework, &proposer, &yes_voter, &no_voter);
 
         create_proposal_for_test(&proposer, multi_step);
         vote(&yes_voter, signer::address_of(&yes_voter), 0, true);
@@ -962,7 +994,7 @@ module nabob_framework::nabob_governance {
     }
 
     #[test(nabob_framework = @nabob_framework, proposer = @0x123, voter_1 = @0x234, voter_2 = @345)]
-    #[expected_failure(abort_code = 0x10004, location = nabob_framework::voting)]
+    #[expected_failure(abort_code = 65541, location = nabob_framework::nabob_governance)]
     public entry fun test_cannot_double_vote(
         nabob_framework: signer,
         proposer: signer,
@@ -974,7 +1006,7 @@ module nabob_framework::nabob_governance {
         create_proposal(
             &proposer,
             signer::address_of(&proposer),
-            b"",
+            b"0",
             b"",
             b"",
         );
@@ -985,7 +1017,54 @@ module nabob_framework::nabob_governance {
     }
 
     #[test(nabob_framework = @nabob_framework, proposer = @0x123, voter_1 = @0x234, voter_2 = @345)]
-    #[expected_failure(abort_code = 0x10004, location = nabob_framework::voting)]
+    #[expected_failure(abort_code = 65551, location = nabob_framework::nabob_governance)]
+    public entry fun test_cannot_vote_for_expired_proposal(
+        nabob_framework: signer,
+        proposer: signer,
+        voter_1: signer,
+        voter_2: signer,
+    ) acquires ApprovedExecutionHashes, GovernanceConfig, GovernanceResponsbility, VotingRecords, VotingRecordsV2, GovernanceEvents {
+        setup_partial_voting_with_initialized_stake(&nabob_framework, &proposer, &voter_1, &voter_2);
+
+        create_proposal(
+            &proposer,
+            signer::address_of(&proposer),
+            b"0",
+            b"",
+            b"",
+        );
+
+        timestamp::fast_forward_seconds(2000);
+        stake::end_epoch();
+
+        // Should abort because the proposal has expired.
+        vote(&voter_1, signer::address_of(&voter_1), 0, true);
+    }
+
+    #[test(nabob_framework = @nabob_framework, proposer = @0x123, voter_1 = @0x234, voter_2 = @0x345)]
+    #[expected_failure(abort_code = 65539, location = nabob_framework::nabob_governance)]
+    public entry fun test_cannot_vote_due_to_insufficient_stake_lockup(
+        nabob_framework: signer,
+        proposer: signer,
+        voter_1: signer,
+        voter_2: signer,
+    ) acquires ApprovedExecutionHashes, GovernanceConfig, GovernanceResponsbility, VotingRecords, VotingRecordsV2, GovernanceEvents {
+        setup_partial_voting_with_initialized_stake(&nabob_framework, &proposer, &voter_1, &voter_2);
+
+        create_proposal(
+            &proposer,
+            signer::address_of(&proposer),
+            b"0",
+            b"",
+            b"",
+        );
+
+        // Should abort due to insufficient stake lockup.
+        vote(&voter_1, signer::address_of(&voter_1), 0, true);
+    }
+
+    #[test(nabob_framework = @nabob_framework, proposer = @0x123, voter_1 = @0x234, voter_2 = @345)]
+    #[expected_failure(abort_code = 65541, location = nabob_framework::nabob_governance)]
     public entry fun test_cannot_double_vote_with_different_voter_addresses(
         nabob_framework: signer,
         proposer: signer,
@@ -997,7 +1076,7 @@ module nabob_framework::nabob_governance {
         create_proposal(
             &proposer,
             signer::address_of(&proposer),
-            b"",
+            b"0",
             b"",
             b"",
         );
@@ -1134,6 +1213,7 @@ module nabob_framework::nabob_governance {
         voter_1: signer,
         voter_2: signer,
     ) acquires ApprovedExecutionHashes, GovernanceConfig, GovernanceResponsbility, VotingRecords, VotingRecordsV2, GovernanceEvents {
+        features::change_feature_flags_for_testing(&nabob_framework, vector[], vector[features::get_partial_governance_voting()]);
         setup_voting(&nabob_framework, &proposer, &voter_1, &voter_2);
         let execution_hash = vector::empty<u8>();
         vector::push_back(&mut execution_hash, 1);
@@ -1147,7 +1227,6 @@ module nabob_framework::nabob_governance {
         assert!(get_remaining_voting_power(voter_1_addr, 0) == 0, 1);
         assert!(get_remaining_voting_power(voter_2_addr, 0) == 10, 2);
 
-        initialize_partial_voting(&nabob_framework);
         features::change_feature_flags_for_testing(&nabob_framework, vector[features::get_partial_governance_voting()], vector[]);
 
         coin::register<NabobCoin>(&voter_1);
@@ -1171,7 +1250,7 @@ module nabob_framework::nabob_governance {
         voter_1: signer,
         voter_2: signer,
     ) acquires GovernanceConfig, GovernanceResponsbility, VotingRecords, VotingRecordsV2, GovernanceEvents {
-        setup_voting_with_initialized_stake(&nabob_framework, &proposer, &voter_1, &voter_2);
+        setup_partial_voting_with_initialized_stake(&nabob_framework, &proposer, &voter_1, &voter_2);
         let execution_hash = vector::empty<u8>();
         vector::push_back(&mut execution_hash, 1);
         let proposer_addr = signer::address_of(&proposer);
@@ -1300,13 +1379,23 @@ module nabob_framework::nabob_governance {
     }
 
     #[test_only]
+    public fun setup_partial_voting_with_initialized_stake(
+        nabob_framework: &signer,
+        proposer: &signer,
+        yes_voter: &signer,
+        no_voter: &signer,
+    ) acquires GovernanceResponsbility {
+        features::change_feature_flags_for_testing(nabob_framework, vector[features::get_partial_governance_voting()], vector[]);
+        setup_voting_with_initialized_stake(nabob_framework, proposer, yes_voter, no_voter);
+    }
+
+    #[test_only]
     public fun setup_partial_voting(
         nabob_framework: &signer,
         proposer: &signer,
         voter_1: &signer,
         voter_2: &signer,
     ) acquires GovernanceResponsbility {
-        initialize_partial_voting(nabob_framework);
         features::change_feature_flags_for_testing(nabob_framework, vector[features::get_partial_governance_voting()], vector[]);
         setup_voting(nabob_framework, proposer, voter_1, voter_2);
     }
@@ -1340,7 +1429,7 @@ module nabob_framework::nabob_governance {
         yes_voter: signer,
         no_voter: signer,
     ) acquires GovernanceResponsbility, GovernanceConfig, ApprovedExecutionHashes, VotingRecords, VotingRecordsV2, GovernanceEvents {
-        setup_voting(&nabob_framework, &proposer, &yes_voter, &no_voter);
+        setup_partial_voting(&nabob_framework, &proposer, &yes_voter, &no_voter);
 
         create_proposal_for_test(&proposer, true);
         vote(&yes_voter, signer::address_of(&yes_voter), 0, true);

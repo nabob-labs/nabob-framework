@@ -7,6 +7,7 @@ module nabob_framework::function_info {
 
     friend nabob_framework::fungible_asset;
     friend nabob_framework::dispatchable_fungible_asset;
+    friend nabob_framework::account_abstraction;
 
     /// String is not a valid Move identifier
     const EINVALID_IDENTIFIER: u64 = 1;

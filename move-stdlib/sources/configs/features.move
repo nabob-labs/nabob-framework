@@ -499,13 +499,13 @@ module std::features {
     const PRIMARY_BOB_FUNGIBLE_STORE_AT_USER_ADDRESS: u64 = 61;
 
     #[deprecated]
-    public fun get_primary_bob_fungible_store_at_user_address_feature(
+    public fun get_primary_apt_fungible_store_at_user_address_feature(
     ): u64 {
         abort error::invalid_argument(EINVALID_FEATURE)
     }
 
     #[deprecated]
-    public fun primary_bob_fungible_store_at_user_address_enabled(): bool acquires Features {
+    public fun primary_apt_fungible_store_at_user_address_enabled(): bool acquires Features {
         is_enabled(PRIMARY_BOB_FUNGIBLE_STORE_AT_USER_ADDRESS)
     }
 
@@ -538,18 +538,18 @@ module std::features {
     /// Lifetime: transient
     const NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE: u64 = 64;
 
-    public fun get_new_accounts_default_to_fa_bob_store_feature(): u64 { NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE }
+    public fun get_new_accounts_default_to_fa_apt_store_feature(): u64 { NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE }
 
-    public fun new_accounts_default_to_fa_bob_store_enabled(): bool acquires Features {
+    public fun new_accounts_default_to_fa_apt_store_enabled(): bool acquires Features {
         is_enabled(NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE)
     }
 
     /// Lifetime: transient
     const OPERATIONS_DEFAULT_TO_FA_BOB_STORE: u64 = 65;
 
-    public fun get_operations_default_to_fa_bob_store_feature(): u64 { OPERATIONS_DEFAULT_TO_FA_BOB_STORE }
+    public fun get_operations_default_to_fa_apt_store_feature(): u64 { OPERATIONS_DEFAULT_TO_FA_BOB_STORE }
 
-    public fun operations_default_to_fa_bob_store_enabled(): bool acquires Features {
+    public fun operations_default_to_fa_apt_store_enabled(): bool acquires Features {
         is_enabled(OPERATIONS_DEFAULT_TO_FA_BOB_STORE)
     }
 
@@ -605,6 +605,33 @@ module std::features {
 
     public fun is_collection_owner_enabled(): bool acquires Features {
         is_enabled(COLLECTION_OWNER)
+    }
+
+    const NATIVE_MEMORY_OPERATIONS: u64 = 80;
+
+    public fun get_native_memory_operations_feature(): u64 { NATIVE_MEMORY_OPERATIONS }
+
+    public fun is_native_memory_operations_enabled(): bool acquires Features {
+        is_enabled(NATIVE_MEMORY_OPERATIONS)
+    }
+
+    const PERMISSIONED_SIGNER: u64 = 84;
+
+    public fun get_permissioned_signer_feature(): u64 { PERMISSIONED_SIGNER }
+
+    public fun is_permissioned_signer_enabled(): bool acquires Features {
+        is_enabled(PERMISSIONED_SIGNER)
+    }
+
+    /// Whether the account abstraction is enabled.
+    ///
+    /// Lifetime: transient
+    const ACCOUNT_ABSTRACTION: u64 = 85;
+
+    public fun get_account_abstraction_feature(): u64 { ACCOUNT_ABSTRACTION }
+
+    public fun is_account_abstraction_enabled(): bool acquires Features {
+        is_enabled(ACCOUNT_ABSTRACTION)
     }
 
     // ============================================================================================

@@ -34,15 +34,15 @@ This module provides an interface to burn or collect and redistribute transactio
     -  [Function `initialize_storage_refund`](#@Specification_1_initialize_storage_refund)
 
 
-<pre><code><b>use</b> <a href="coin.md#0x1_coin">0x1::coin</a>;
-<b>use</b> <a href="../../move-stdlib/doc/error.md#0x1_error">0x1::error</a>;
-<b>use</b> <a href="event.md#0x1_event">0x1::event</a>;
-<b>use</b> <a href="../../move-stdlib/doc/features.md#0x1_features">0x1::features</a>;
-<b>use</b> <a href="fungible_asset.md#0x1_fungible_asset">0x1::fungible_asset</a>;
-<b>use</b> <a href="nabob_account.md#0x1_nabob_account">0x1::nabob_account</a>;
+<pre><code><b>use</b> <a href="nabob_account.md#0x1_nabob_account">0x1::nabob_account</a>;
 <b>use</b> <a href="nabob_coin.md#0x1_nabob_coin">0x1::nabob_coin</a>;
-<b>use</b> <a href="../../move-stdlib/doc/option.md#0x1_option">0x1::option</a>;
-<b>use</b> <a href="../../move-stdlib/doc/signer.md#0x1_signer">0x1::signer</a>;
+<b>use</b> <a href="coin.md#0x1_coin">0x1::coin</a>;
+<b>use</b> <a href="../../nabob-stdlib/../move-stdlib/doc/error.md#0x1_error">0x1::error</a>;
+<b>use</b> <a href="event.md#0x1_event">0x1::event</a>;
+<b>use</b> <a href="../../nabob-stdlib/../move-stdlib/doc/features.md#0x1_features">0x1::features</a>;
+<b>use</b> <a href="fungible_asset.md#0x1_fungible_asset">0x1::fungible_asset</a>;
+<b>use</b> <a href="../../nabob-stdlib/../move-stdlib/doc/option.md#0x1_option">0x1::option</a>;
+<b>use</b> <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="system_addresses.md#0x1_system_addresses">0x1::system_addresses</a>;
 </code></pre>
 
@@ -229,7 +229,7 @@ collected when executing the block.
 
 </dd>
 <dt>
-<code>proposer: <a href="../../move-stdlib/doc/option.md#0x1_option_Option">option::Option</a>&lt;<b>address</b>&gt;</code>
+<code>proposer: <a href="../../nabob-stdlib/../move-stdlib/doc/option.md#0x1_option_Option">option::Option</a>&lt;<b>address</b>&gt;</code>
 </dt>
 <dd>
 
@@ -309,15 +309,15 @@ Burn transaction fees in epilogue.
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_burn_fee">burn_fee</a>(<a href="account.md#0x1_account">account</a>: <b>address</b>, fee: u64) <b>acquires</b> <a href="transaction_fee.md#0x1_transaction_fee_NabobFABurnCapabilities">NabobFABurnCapabilities</a>, <a href="transaction_fee.md#0x1_transaction_fee_NabobCoinCapabilities">NabobCoinCapabilities</a> {
     <b>if</b> (<b>exists</b>&lt;<a href="transaction_fee.md#0x1_transaction_fee_NabobFABurnCapabilities">NabobFABurnCapabilities</a>&gt;(@nabob_framework)) {
         <b>let</b> burn_ref = &<b>borrow_global</b>&lt;<a href="transaction_fee.md#0x1_transaction_fee_NabobFABurnCapabilities">NabobFABurnCapabilities</a>&gt;(@nabob_framework).burn_ref;
-        <a href="nabob_account.md#0x1_nabob_account_burn_from_fungible_store">nabob_account::burn_from_fungible_store</a>(burn_ref, <a href="account.md#0x1_account">account</a>, fee);
+        <a href="nabob_account.md#0x1_nabob_account_burn_from_fungible_store_for_gas">nabob_account::burn_from_fungible_store_for_gas</a>(burn_ref, <a href="account.md#0x1_account">account</a>, fee);
     } <b>else</b> {
         <b>let</b> burn_cap = &<b>borrow_global</b>&lt;<a href="transaction_fee.md#0x1_transaction_fee_NabobCoinCapabilities">NabobCoinCapabilities</a>&gt;(@nabob_framework).burn_cap;
-        <b>if</b> (<a href="../../move-stdlib/doc/features.md#0x1_features_operations_default_to_fa_bob_store_enabled">features::operations_default_to_fa_bob_store_enabled</a>()) {
+        <b>if</b> (<a href="../../nabob-stdlib/../move-stdlib/doc/features.md#0x1_features_operations_default_to_fa_bob_store_enabled">features::operations_default_to_fa_bob_store_enabled</a>()) {
             <b>let</b> (burn_ref, burn_receipt) = <a href="coin.md#0x1_coin_get_paired_burn_ref">coin::get_paired_burn_ref</a>(burn_cap);
-            <a href="nabob_account.md#0x1_nabob_account_burn_from_fungible_store">nabob_account::burn_from_fungible_store</a>(&burn_ref, <a href="account.md#0x1_account">account</a>, fee);
+            <a href="nabob_account.md#0x1_nabob_account_burn_from_fungible_store_for_gas">nabob_account::burn_from_fungible_store_for_gas</a>(&burn_ref, <a href="account.md#0x1_account">account</a>, fee);
             <a href="coin.md#0x1_coin_return_paired_burn_ref">coin::return_paired_burn_ref</a>(burn_ref, burn_receipt);
         } <b>else</b> {
-            <a href="coin.md#0x1_coin_burn_from">coin::burn_from</a>&lt;NabobCoin&gt;(
+            <a href="coin.md#0x1_coin_burn_from_for_gas">coin::burn_from_for_gas</a>&lt;NabobCoin&gt;(
                 <a href="account.md#0x1_account">account</a>,
                 fee,
                 burn_cap,
@@ -350,7 +350,7 @@ Mint refund in epilogue.
 <pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_mint_and_refund">mint_and_refund</a>(<a href="account.md#0x1_account">account</a>: <b>address</b>, refund: u64) <b>acquires</b> <a href="transaction_fee.md#0x1_transaction_fee_NabobCoinMintCapability">NabobCoinMintCapability</a> {
     <b>let</b> mint_cap = &<b>borrow_global</b>&lt;<a href="transaction_fee.md#0x1_transaction_fee_NabobCoinMintCapability">NabobCoinMintCapability</a>&gt;(@nabob_framework).mint_cap;
     <b>let</b> refund_coin = <a href="coin.md#0x1_coin_mint">coin::mint</a>(refund, mint_cap);
-    <a href="coin.md#0x1_coin_force_deposit">coin::force_deposit</a>(<a href="account.md#0x1_account">account</a>, refund_coin);
+    <a href="coin.md#0x1_coin_deposit_for_gas_fee">coin::deposit_for_gas_fee</a>(<a href="account.md#0x1_account">account</a>, refund_coin);
 }
 </code></pre>
 
@@ -365,7 +365,7 @@ Mint refund in epilogue.
 Only called during genesis.
 
 
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_store_nabob_coin_burn_cap">store_nabob_coin_burn_cap</a>(nabob_framework: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, burn_cap: <a href="coin.md#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;<a href="nabob_coin.md#0x1_nabob_coin_NabobCoin">nabob_coin::NabobCoin</a>&gt;)
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_store_nabob_coin_burn_cap">store_nabob_coin_burn_cap</a>(nabob_framework: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, burn_cap: <a href="coin.md#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;<a href="nabob_coin.md#0x1_nabob_coin_NabobCoin">nabob_coin::NabobCoin</a>&gt;)
 </code></pre>
 
 
@@ -374,10 +374,10 @@ Only called during genesis.
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_store_nabob_coin_burn_cap">store_nabob_coin_burn_cap</a>(nabob_framework: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, burn_cap: BurnCapability&lt;NabobCoin&gt;) {
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_store_nabob_coin_burn_cap">store_nabob_coin_burn_cap</a>(nabob_framework: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, burn_cap: BurnCapability&lt;NabobCoin&gt;) {
     <a href="system_addresses.md#0x1_system_addresses_assert_nabob_framework">system_addresses::assert_nabob_framework</a>(nabob_framework);
 
-    <b>if</b> (<a href="../../move-stdlib/doc/features.md#0x1_features_operations_default_to_fa_bob_store_enabled">features::operations_default_to_fa_bob_store_enabled</a>()) {
+    <b>if</b> (<a href="../../nabob-stdlib/../move-stdlib/doc/features.md#0x1_features_operations_default_to_fa_bob_store_enabled">features::operations_default_to_fa_bob_store_enabled</a>()) {
         <b>let</b> burn_ref = <a href="coin.md#0x1_coin_convert_and_take_paired_burn_ref">coin::convert_and_take_paired_burn_ref</a>(burn_cap);
         <b>move_to</b>(nabob_framework, <a href="transaction_fee.md#0x1_transaction_fee_NabobFABurnCapabilities">NabobFABurnCapabilities</a> { burn_ref });
     } <b>else</b> {
@@ -396,7 +396,7 @@ Only called during genesis.
 
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_convert_to_nabob_fa_burn_ref">convert_to_nabob_fa_burn_ref</a>(nabob_framework: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_convert_to_nabob_fa_burn_ref">convert_to_nabob_fa_burn_ref</a>(nabob_framework: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>)
 </code></pre>
 
 
@@ -405,12 +405,12 @@ Only called during genesis.
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_convert_to_nabob_fa_burn_ref">convert_to_nabob_fa_burn_ref</a>(nabob_framework: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>) <b>acquires</b> <a href="transaction_fee.md#0x1_transaction_fee_NabobCoinCapabilities">NabobCoinCapabilities</a> {
-    <b>assert</b>!(<a href="../../move-stdlib/doc/features.md#0x1_features_operations_default_to_fa_bob_store_enabled">features::operations_default_to_fa_bob_store_enabled</a>(), <a href="transaction_fee.md#0x1_transaction_fee_EFA_GAS_CHARGING_NOT_ENABLED">EFA_GAS_CHARGING_NOT_ENABLED</a>);
+<pre><code><b>public</b> entry <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_convert_to_nabob_fa_burn_ref">convert_to_nabob_fa_burn_ref</a>(nabob_framework: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>) <b>acquires</b> <a href="transaction_fee.md#0x1_transaction_fee_NabobCoinCapabilities">NabobCoinCapabilities</a> {
+    <b>assert</b>!(<a href="../../nabob-stdlib/../move-stdlib/doc/features.md#0x1_features_operations_default_to_fa_bob_store_enabled">features::operations_default_to_fa_bob_store_enabled</a>(), <a href="transaction_fee.md#0x1_transaction_fee_EFA_GAS_CHARGING_NOT_ENABLED">EFA_GAS_CHARGING_NOT_ENABLED</a>);
     <a href="system_addresses.md#0x1_system_addresses_assert_nabob_framework">system_addresses::assert_nabob_framework</a>(nabob_framework);
     <b>let</b> <a href="transaction_fee.md#0x1_transaction_fee_NabobCoinCapabilities">NabobCoinCapabilities</a> {
         burn_cap,
-    } = <b>move_from</b>&lt;<a href="transaction_fee.md#0x1_transaction_fee_NabobCoinCapabilities">NabobCoinCapabilities</a>&gt;(<a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(nabob_framework));
+    } = <b>move_from</b>&lt;<a href="transaction_fee.md#0x1_transaction_fee_NabobCoinCapabilities">NabobCoinCapabilities</a>&gt;(<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(nabob_framework));
     <b>let</b> burn_ref = <a href="coin.md#0x1_coin_convert_and_take_paired_burn_ref">coin::convert_and_take_paired_burn_ref</a>(burn_cap);
     <b>move_to</b>(nabob_framework, <a href="transaction_fee.md#0x1_transaction_fee_NabobFABurnCapabilities">NabobFABurnCapabilities</a> { burn_ref });
 }
@@ -427,7 +427,7 @@ Only called during genesis.
 Only called during genesis.
 
 
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_store_nabob_coin_mint_cap">store_nabob_coin_mint_cap</a>(nabob_framework: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, mint_cap: <a href="coin.md#0x1_coin_MintCapability">coin::MintCapability</a>&lt;<a href="nabob_coin.md#0x1_nabob_coin_NabobCoin">nabob_coin::NabobCoin</a>&gt;)
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_store_nabob_coin_mint_cap">store_nabob_coin_mint_cap</a>(nabob_framework: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, mint_cap: <a href="coin.md#0x1_coin_MintCapability">coin::MintCapability</a>&lt;<a href="nabob_coin.md#0x1_nabob_coin_NabobCoin">nabob_coin::NabobCoin</a>&gt;)
 </code></pre>
 
 
@@ -436,7 +436,7 @@ Only called during genesis.
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_store_nabob_coin_mint_cap">store_nabob_coin_mint_cap</a>(nabob_framework: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, mint_cap: MintCapability&lt;NabobCoin&gt;) {
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_store_nabob_coin_mint_cap">store_nabob_coin_mint_cap</a>(nabob_framework: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, mint_cap: MintCapability&lt;NabobCoin&gt;) {
     <a href="system_addresses.md#0x1_system_addresses_assert_nabob_framework">system_addresses::assert_nabob_framework</a>(nabob_framework);
     <b>move_to</b>(nabob_framework, <a href="transaction_fee.md#0x1_transaction_fee_NabobCoinMintCapability">NabobCoinMintCapability</a> { mint_cap })
 }
@@ -478,7 +478,7 @@ DEPRECATED
 
 
 <pre><code>#[deprecated]
-<b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_initialize_fee_collection_and_distribution">initialize_fee_collection_and_distribution</a>(_nabob_framework: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, _burn_percentage: u8)
+<b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_initialize_fee_collection_and_distribution">initialize_fee_collection_and_distribution</a>(_nabob_framework: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, _burn_percentage: u8)
 </code></pre>
 
 
@@ -487,8 +487,8 @@ DEPRECATED
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_initialize_fee_collection_and_distribution">initialize_fee_collection_and_distribution</a>(_nabob_framework: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, _burn_percentage: u8) {
-    <b>abort</b> <a href="../../move-stdlib/doc/error.md#0x1_error_not_implemented">error::not_implemented</a>(<a href="transaction_fee.md#0x1_transaction_fee_ENO_LONGER_SUPPORTED">ENO_LONGER_SUPPORTED</a>)
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_initialize_fee_collection_and_distribution">initialize_fee_collection_and_distribution</a>(_nabob_framework: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, _burn_percentage: u8) {
+    <b>abort</b> <a href="../../nabob-stdlib/../move-stdlib/doc/error.md#0x1_error_not_implemented">error::not_implemented</a>(<a href="transaction_fee.md#0x1_transaction_fee_ENO_LONGER_SUPPORTED">ENO_LONGER_SUPPORTED</a>)
 }
 </code></pre>
 
@@ -504,7 +504,7 @@ DEPRECATED
 
 
 <pre><code>#[deprecated]
-<b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_upgrade_burn_percentage">upgrade_burn_percentage</a>(_nabob_framework: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, _new_burn_percentage: u8)
+<b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_upgrade_burn_percentage">upgrade_burn_percentage</a>(_nabob_framework: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, _new_burn_percentage: u8)
 </code></pre>
 
 
@@ -514,10 +514,10 @@ DEPRECATED
 
 
 <pre><code><b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_upgrade_burn_percentage">upgrade_burn_percentage</a>(
-    _nabob_framework: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>,
+    _nabob_framework: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>,
     _new_burn_percentage: u8
 ) {
-    <b>abort</b> <a href="../../move-stdlib/doc/error.md#0x1_error_not_implemented">error::not_implemented</a>(<a href="transaction_fee.md#0x1_transaction_fee_ENO_LONGER_SUPPORTED">ENO_LONGER_SUPPORTED</a>)
+    <b>abort</b> <a href="../../nabob-stdlib/../move-stdlib/doc/error.md#0x1_error_not_implemented">error::not_implemented</a>(<a href="transaction_fee.md#0x1_transaction_fee_ENO_LONGER_SUPPORTED">ENO_LONGER_SUPPORTED</a>)
 }
 </code></pre>
 
@@ -532,7 +532,7 @@ DEPRECATED
 
 
 <pre><code>#[deprecated]
-<b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_initialize_storage_refund">initialize_storage_refund</a>(_: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>)
+<b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_initialize_storage_refund">initialize_storage_refund</a>(_: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>)
 </code></pre>
 
 
@@ -541,8 +541,8 @@ DEPRECATED
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_initialize_storage_refund">initialize_storage_refund</a>(_: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>) {
-    <b>abort</b> <a href="../../move-stdlib/doc/error.md#0x1_error_not_implemented">error::not_implemented</a>(<a href="transaction_fee.md#0x1_transaction_fee_ENO_LONGER_SUPPORTED">ENO_LONGER_SUPPORTED</a>)
+<pre><code><b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_initialize_storage_refund">initialize_storage_refund</a>(_: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>) {
+    <b>abort</b> <a href="../../nabob-stdlib/../move-stdlib/doc/error.md#0x1_error_not_implemented">error::not_implemented</a>(<a href="transaction_fee.md#0x1_transaction_fee_ENO_LONGER_SUPPORTED">ENO_LONGER_SUPPORTED</a>)
 }
 </code></pre>
 
@@ -651,7 +651,7 @@ DEPRECATED
 
 </dd>
 <dt>
-<code>proposer: <a href="../../move-stdlib/doc/option.md#0x1_option_Option">option::Option</a>&lt;<b>address</b>&gt;</code>
+<code>proposer: <a href="../../nabob-stdlib/../move-stdlib/doc/option.md#0x1_option_Option">option::Option</a>&lt;<b>address</b>&gt;</code>
 </dt>
 <dd>
 
@@ -695,17 +695,17 @@ DEPRECATED
     && <b>exists</b>&lt;CoinStore&lt;NabobCoin&gt;&gt;(account_addr));
 <b>aborts_if</b> coin_store.<a href="coin.md#0x1_coin">coin</a>.value &lt; amount;
 <b>let</b> maybe_supply = <b>global</b>&lt;CoinInfo&lt;NabobCoin&gt;&gt;(nabob_addr).supply;
-<b>let</b> supply_aggr = <a href="../../move-stdlib/doc/option.md#0x1_option_spec_borrow">option::spec_borrow</a>(maybe_supply);
+<b>let</b> supply_aggr = <a href="../../nabob-stdlib/../move-stdlib/doc/option.md#0x1_option_spec_borrow">option::spec_borrow</a>(maybe_supply);
 <b>let</b> value = <a href="optional_aggregator.md#0x1_optional_aggregator_optional_aggregator_value">optional_aggregator::optional_aggregator_value</a>(supply_aggr);
 <b>let</b> <b>post</b> post_maybe_supply = <b>global</b>&lt;CoinInfo&lt;NabobCoin&gt;&gt;(nabob_addr).supply;
-<b>let</b> <b>post</b> post_supply = <a href="../../move-stdlib/doc/option.md#0x1_option_spec_borrow">option::spec_borrow</a>(post_maybe_supply);
+<b>let</b> <b>post</b> post_supply = <a href="../../nabob-stdlib/../move-stdlib/doc/option.md#0x1_option_spec_borrow">option::spec_borrow</a>(post_maybe_supply);
 <b>let</b> <b>post</b> post_value = <a href="optional_aggregator.md#0x1_optional_aggregator_optional_aggregator_value">optional_aggregator::optional_aggregator_value</a>(post_supply);
-<b>aborts_if</b> <a href="../../move-stdlib/doc/option.md#0x1_option_spec_is_some">option::spec_is_some</a>(maybe_supply) && value &lt; amount;
+<b>aborts_if</b> <a href="../../nabob-stdlib/../move-stdlib/doc/option.md#0x1_option_spec_is_some">option::spec_is_some</a>(maybe_supply) && value &lt; amount;
 <b>ensures</b> post_coin_store.<a href="coin.md#0x1_coin">coin</a>.value == coin_store.<a href="coin.md#0x1_coin">coin</a>.value - amount;
-<b>ensures</b> <b>if</b> (<a href="../../move-stdlib/doc/option.md#0x1_option_spec_is_some">option::spec_is_some</a>(maybe_supply)) {
+<b>ensures</b> <b>if</b> (<a href="../../nabob-stdlib/../move-stdlib/doc/option.md#0x1_option_spec_is_some">option::spec_is_some</a>(maybe_supply)) {
     post_value == value - amount
 } <b>else</b> {
-    <a href="../../move-stdlib/doc/option.md#0x1_option_spec_is_none">option::spec_is_none</a>(post_maybe_supply)
+    <a href="../../nabob-stdlib/../move-stdlib/doc/option.md#0x1_option_spec_is_none">option::spec_is_none</a>(post_maybe_supply)
 };
 <b>ensures</b> <a href="coin.md#0x1_coin_supply">coin::supply</a>&lt;NabobCoin&gt; == <b>old</b>(<a href="coin.md#0x1_coin_supply">coin::supply</a>&lt;NabobCoin&gt;) - amount;
 </code></pre>
@@ -742,7 +742,7 @@ DEPRECATED
 ### Function `store_nabob_coin_burn_cap`
 
 
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_store_nabob_coin_burn_cap">store_nabob_coin_burn_cap</a>(nabob_framework: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, burn_cap: <a href="coin.md#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;<a href="nabob_coin.md#0x1_nabob_coin_NabobCoin">nabob_coin::NabobCoin</a>&gt;)
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_store_nabob_coin_burn_cap">store_nabob_coin_burn_cap</a>(nabob_framework: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, burn_cap: <a href="coin.md#0x1_coin_BurnCapability">coin::BurnCapability</a>&lt;<a href="nabob_coin.md#0x1_nabob_coin_NabobCoin">nabob_coin::NabobCoin</a>&gt;)
 </code></pre>
 
 
@@ -751,7 +751,7 @@ Aborts if <code><a href="transaction_fee.md#0x1_transaction_fee_NabobCoinCapabil
 
 
 <pre><code><b>pragma</b> verify = <b>false</b>;
-<b>let</b> addr = <a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(nabob_framework);
+<b>let</b> addr = <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(nabob_framework);
 <b>aborts_if</b> !<a href="system_addresses.md#0x1_system_addresses_is_nabob_framework_address">system_addresses::is_nabob_framework_address</a>(addr);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="transaction_fee.md#0x1_transaction_fee_NabobFABurnCapabilities">NabobFABurnCapabilities</a>&gt;(addr);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="transaction_fee.md#0x1_transaction_fee_NabobCoinCapabilities">NabobCoinCapabilities</a>&gt;(addr);
@@ -765,7 +765,7 @@ Aborts if <code><a href="transaction_fee.md#0x1_transaction_fee_NabobCoinCapabil
 ### Function `store_nabob_coin_mint_cap`
 
 
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_store_nabob_coin_mint_cap">store_nabob_coin_mint_cap</a>(nabob_framework: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, mint_cap: <a href="coin.md#0x1_coin_MintCapability">coin::MintCapability</a>&lt;<a href="nabob_coin.md#0x1_nabob_coin_NabobCoin">nabob_coin::NabobCoin</a>&gt;)
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_store_nabob_coin_mint_cap">store_nabob_coin_mint_cap</a>(nabob_framework: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, mint_cap: <a href="coin.md#0x1_coin_MintCapability">coin::MintCapability</a>&lt;<a href="nabob_coin.md#0x1_nabob_coin_NabobCoin">nabob_coin::NabobCoin</a>&gt;)
 </code></pre>
 
 
@@ -773,7 +773,7 @@ Ensure caller is admin.
 Aborts if <code><a href="transaction_fee.md#0x1_transaction_fee_NabobCoinMintCapability">NabobCoinMintCapability</a></code> already exists.
 
 
-<pre><code><b>let</b> addr = <a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(nabob_framework);
+<pre><code><b>let</b> addr = <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(nabob_framework);
 <b>aborts_if</b> !<a href="system_addresses.md#0x1_system_addresses_is_nabob_framework_address">system_addresses::is_nabob_framework_address</a>(addr);
 <b>aborts_if</b> <b>exists</b>&lt;<a href="transaction_fee.md#0x1_transaction_fee_NabobCoinMintCapability">NabobCoinMintCapability</a>&gt;(addr);
 <b>ensures</b> <b>exists</b>&lt;<a href="transaction_fee.md#0x1_transaction_fee_NabobCoinMintCapability">NabobCoinMintCapability</a>&gt;(addr);
@@ -799,7 +799,7 @@ Aborts if module event feature is not enabled.
 
 
 <pre><code>#[deprecated]
-<b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_initialize_fee_collection_and_distribution">initialize_fee_collection_and_distribution</a>(_nabob_framework: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, _burn_percentage: u8)
+<b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_initialize_fee_collection_and_distribution">initialize_fee_collection_and_distribution</a>(_nabob_framework: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, _burn_percentage: u8)
 </code></pre>
 
 
@@ -811,7 +811,7 @@ Aborts if module event feature is not enabled.
 
 
 <pre><code>#[deprecated]
-<b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_initialize_storage_refund">initialize_storage_refund</a>(_: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>)
+<b>public</b> <b>fun</b> <a href="transaction_fee.md#0x1_transaction_fee_initialize_storage_refund">initialize_storage_refund</a>(_: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>)
 </code></pre>
 
 

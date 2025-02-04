@@ -58,6 +58,7 @@ spec nabob_framework::staking_config {
     spec module {
         use nabob_framework::chain_status;
         invariant [suspendable] chain_status::is_operating() ==> exists<StakingConfig>(@nabob_framework);
+        invariant [suspendable] chain_status::is_operating() ==> exists<StakingRewardsConfig>(@nabob_framework);
         pragma verify = true;
         pragma aborts_if_is_strict;
     }
@@ -106,6 +107,7 @@ spec nabob_framework::staking_config {
     ) {
         use std::signer;
         let addr = signer::address_of(nabob_framework);
+        requires exists<timestamp::CurrentTimeMicroseconds>(@nabob_framework);
         /// [high-level-req-1.1]
         aborts_if addr != @nabob_framework;
         aborts_if minimum_stake > maximum_stake || maximum_stake == 0;
@@ -117,7 +119,9 @@ spec nabob_framework::staking_config {
         aborts_if rewards_rate > MAX_REWARDS_RATE;
         aborts_if rewards_rate > rewards_rate_denominator;
         aborts_if exists<StakingConfig>(addr);
+        aborts_if exists<StakingRewardsConfig>(addr);
         ensures exists<StakingConfig>(addr);
+        ensures exists<StakingRewardsConfig>(addr);
     }
 
     /// Caller must be @nabob_framework.

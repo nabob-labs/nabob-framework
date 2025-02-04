@@ -32,7 +32,7 @@ on account to have access to this.
 
 
 
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="create_signer.md#0x1_create_signer">create_signer</a>(addr: <b>address</b>): <a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="create_signer.md#0x1_create_signer">create_signer</a>(addr: <b>address</b>): <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>
 </code></pre>
 
 
@@ -41,7 +41,7 @@ on account to have access to this.
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b>(<b>friend</b>) <b>native</b> <b>fun</b> <a href="create_signer.md#0x1_create_signer">create_signer</a>(addr: <b>address</b>): <a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>;
+<pre><code><b>public</b>(<b>friend</b>) <b>native</b> <b>fun</b> <a href="create_signer.md#0x1_create_signer">create_signer</a>(addr: <b>address</b>): <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>;
 </code></pre>
 
 
@@ -77,7 +77,7 @@ on account to have access to this.
 <td>The account owner should have the ability to create a signer for their account.</td>
 <td>Medium</td>
 <td>Before an Account resource is created, a signer is created for the specified new_address, and later, the Account resource is assigned to this signer.</td>
-<td>Enforced by the <a href="https://github.com/nabob-labs/nabob/blob/main/third_party/move/move-vm/types/src/values/values_impl.rs#L1129">move vm</a>.</td>
+<td>Enforced by the <a href="https://github.com/nabob-labs/nabob-core/blob/main/third_party/move/move-vm/types/src/values/values_impl.rs#L1129">move vm</a>.</td>
 </tr>
 
 <tr>
@@ -117,7 +117,7 @@ on account to have access to this.
 ### Function `create_signer`
 
 
-<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="create_signer.md#0x1_create_signer">create_signer</a>(addr: <b>address</b>): <a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>
+<pre><code><b>public</b>(<b>friend</b>) <b>fun</b> <a href="create_signer.md#0x1_create_signer">create_signer</a>(addr: <b>address</b>): <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>
 </code></pre>
 
 
@@ -126,7 +126,17 @@ Convert address to singer and return.
 
 <pre><code><b>pragma</b> opaque;
 <b>aborts_if</b> [abstract] <b>false</b>;
-<b>ensures</b> [abstract] <a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(result) == addr;
+<b>ensures</b> [abstract] <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(result) == addr;
+<b>ensures</b> [abstract] result == <a href="create_signer.md#0x1_create_signer_spec_create_signer">spec_create_signer</a>(addr);
+</code></pre>
+
+
+
+
+<a id="0x1_create_signer_spec_create_signer"></a>
+
+
+<pre><code><b>fun</b> <a href="create_signer.md#0x1_create_signer_spec_create_signer">spec_create_signer</a>(addr: <b>address</b>): <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>;
 </code></pre>
 
 

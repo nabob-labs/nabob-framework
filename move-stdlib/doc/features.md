@@ -112,17 +112,17 @@ return true.
 -  [Function `transaction_context_extension_enabled`](#0x1_features_transaction_context_extension_enabled)
 -  [Function `get_coin_to_fungible_asset_migration_feature`](#0x1_features_get_coin_to_fungible_asset_migration_feature)
 -  [Function `coin_to_fungible_asset_migration_feature_enabled`](#0x1_features_coin_to_fungible_asset_migration_feature_enabled)
--  [Function `get_primary_bob_fungible_store_at_user_address_feature`](#0x1_features_get_primary_bob_fungible_store_at_user_address_feature)
--  [Function `primary_bob_fungible_store_at_user_address_enabled`](#0x1_features_primary_bob_fungible_store_at_user_address_enabled)
+-  [Function `get_primary_apt_fungible_store_at_user_address_feature`](#0x1_features_get_primary_apt_fungible_store_at_user_address_feature)
+-  [Function `primary_apt_fungible_store_at_user_address_enabled`](#0x1_features_primary_apt_fungible_store_at_user_address_enabled)
 -  [Function `aggregator_v2_is_at_least_api_enabled`](#0x1_features_aggregator_v2_is_at_least_api_enabled)
 -  [Function `get_object_native_derived_address_feature`](#0x1_features_get_object_native_derived_address_feature)
 -  [Function `object_native_derived_address_enabled`](#0x1_features_object_native_derived_address_enabled)
 -  [Function `get_dispatchable_fungible_asset_feature`](#0x1_features_get_dispatchable_fungible_asset_feature)
 -  [Function `dispatchable_fungible_asset_enabled`](#0x1_features_dispatchable_fungible_asset_enabled)
--  [Function `get_new_accounts_default_to_fa_bob_store_feature`](#0x1_features_get_new_accounts_default_to_fa_bob_store_feature)
--  [Function `new_accounts_default_to_fa_bob_store_enabled`](#0x1_features_new_accounts_default_to_fa_bob_store_enabled)
--  [Function `get_operations_default_to_fa_bob_store_feature`](#0x1_features_get_operations_default_to_fa_bob_store_feature)
--  [Function `operations_default_to_fa_bob_store_enabled`](#0x1_features_operations_default_to_fa_bob_store_enabled)
+-  [Function `get_new_accounts_default_to_fa_apt_store_feature`](#0x1_features_get_new_accounts_default_to_fa_apt_store_feature)
+-  [Function `new_accounts_default_to_fa_apt_store_enabled`](#0x1_features_new_accounts_default_to_fa_apt_store_enabled)
+-  [Function `get_operations_default_to_fa_apt_store_feature`](#0x1_features_get_operations_default_to_fa_apt_store_feature)
+-  [Function `operations_default_to_fa_apt_store_enabled`](#0x1_features_operations_default_to_fa_apt_store_enabled)
 -  [Function `get_concurrent_fungible_balance_feature`](#0x1_features_get_concurrent_fungible_balance_feature)
 -  [Function `concurrent_fungible_balance_enabled`](#0x1_features_concurrent_fungible_balance_enabled)
 -  [Function `get_default_to_concurrent_fungible_balance_feature`](#0x1_features_get_default_to_concurrent_fungible_balance_feature)
@@ -133,6 +133,12 @@ return true.
 -  [Function `transaction_simulation_enhancement_enabled`](#0x1_features_transaction_simulation_enhancement_enabled)
 -  [Function `get_collection_owner_feature`](#0x1_features_get_collection_owner_feature)
 -  [Function `is_collection_owner_enabled`](#0x1_features_is_collection_owner_enabled)
+-  [Function `get_native_memory_operations_feature`](#0x1_features_get_native_memory_operations_feature)
+-  [Function `is_native_memory_operations_enabled`](#0x1_features_is_native_memory_operations_enabled)
+-  [Function `get_permissioned_signer_feature`](#0x1_features_get_permissioned_signer_feature)
+-  [Function `is_permissioned_signer_enabled`](#0x1_features_is_permissioned_signer_enabled)
+-  [Function `get_account_abstraction_feature`](#0x1_features_get_account_abstraction_feature)
+-  [Function `is_account_abstraction_enabled`](#0x1_features_is_account_abstraction_enabled)
 -  [Function `change_feature_flags`](#0x1_features_change_feature_flags)
 -  [Function `change_feature_flags_internal`](#0x1_features_change_feature_flags_internal)
 -  [Function `change_feature_flags_for_next_epoch`](#0x1_features_change_feature_flags_for_next_epoch)
@@ -142,7 +148,6 @@ return true.
 -  [Function `contains`](#0x1_features_contains)
 -  [Function `apply_diff`](#0x1_features_apply_diff)
 -  [Function `ensure_framework_signer`](#0x1_features_ensure_framework_signer)
--  [Function `change_feature_flags_for_verification`](#0x1_features_change_feature_flags_for_verification)
 -  [Specification](#@Specification_1)
     -  [Resource `Features`](#@Specification_1_Features)
     -  [Resource `PendingFeatures`](#@Specification_1_PendingFeatures)
@@ -237,6 +242,18 @@ Lifetime: transient
 
 
 <pre><code><b>const</b> <a href="features.md#0x1_features_ABORT_IF_MULTISIG_PAYLOAD_MISMATCH">ABORT_IF_MULTISIG_PAYLOAD_MISMATCH</a>: u64 = 70;
+</code></pre>
+
+
+
+<a id="0x1_features_ACCOUNT_ABSTRACTION"></a>
+
+Whether the account abstraction is enabled.
+
+Lifetime: transient
+
+
+<pre><code><b>const</b> <a href="features.md#0x1_features_ACCOUNT_ABSTRACTION">ACCOUNT_ABSTRACTION</a>: u64 = 85;
 </code></pre>
 
 
@@ -671,6 +688,15 @@ Lifetime: transient
 
 
 
+<a id="0x1_features_NATIVE_MEMORY_OPERATIONS"></a>
+
+
+
+<pre><code><b>const</b> <a href="features.md#0x1_features_NATIVE_MEMORY_OPERATIONS">NATIVE_MEMORY_OPERATIONS</a>: u64 = 80;
+</code></pre>
+
+
+
 <a id="0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE"></a>
 
 Lifetime: transient
@@ -740,6 +766,15 @@ Lifetime: transient
 
 
 <pre><code><b>const</b> <a href="features.md#0x1_features_PERIODICAL_REWARD_RATE_DECREASE">PERIODICAL_REWARD_RATE_DECREASE</a>: u64 = 16;
+</code></pre>
+
+
+
+<a id="0x1_features_PERMISSIONED_SIGNER"></a>
+
+
+
+<pre><code><b>const</b> <a href="features.md#0x1_features_PERMISSIONED_SIGNER">PERMISSIONED_SIGNER</a>: u64 = 84;
 </code></pre>
 
 
@@ -2787,14 +2822,14 @@ Deprecated feature
 
 </details>
 
-<a id="0x1_features_get_primary_bob_fungible_store_at_user_address_feature"></a>
+<a id="0x1_features_get_primary_apt_fungible_store_at_user_address_feature"></a>
 
-## Function `get_primary_bob_fungible_store_at_user_address_feature`
+## Function `get_primary_apt_fungible_store_at_user_address_feature`
 
 
 
 <pre><code>#[deprecated]
-<b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_primary_bob_fungible_store_at_user_address_feature">get_primary_bob_fungible_store_at_user_address_feature</a>(): u64
+<b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_primary_apt_fungible_store_at_user_address_feature">get_primary_apt_fungible_store_at_user_address_feature</a>(): u64
 </code></pre>
 
 
@@ -2803,7 +2838,7 @@ Deprecated feature
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_primary_bob_fungible_store_at_user_address_feature">get_primary_bob_fungible_store_at_user_address_feature</a>(
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_primary_apt_fungible_store_at_user_address_feature">get_primary_apt_fungible_store_at_user_address_feature</a>(
 ): u64 {
     <b>abort</b> <a href="error.md#0x1_error_invalid_argument">error::invalid_argument</a>(<a href="features.md#0x1_features_EINVALID_FEATURE">EINVALID_FEATURE</a>)
 }
@@ -2813,14 +2848,14 @@ Deprecated feature
 
 </details>
 
-<a id="0x1_features_primary_bob_fungible_store_at_user_address_enabled"></a>
+<a id="0x1_features_primary_apt_fungible_store_at_user_address_enabled"></a>
 
-## Function `primary_bob_fungible_store_at_user_address_enabled`
+## Function `primary_apt_fungible_store_at_user_address_enabled`
 
 
 
 <pre><code>#[deprecated]
-<b>public</b> <b>fun</b> <a href="features.md#0x1_features_primary_bob_fungible_store_at_user_address_enabled">primary_bob_fungible_store_at_user_address_enabled</a>(): bool
+<b>public</b> <b>fun</b> <a href="features.md#0x1_features_primary_apt_fungible_store_at_user_address_enabled">primary_apt_fungible_store_at_user_address_enabled</a>(): bool
 </code></pre>
 
 
@@ -2829,7 +2864,7 @@ Deprecated feature
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_primary_bob_fungible_store_at_user_address_enabled">primary_bob_fungible_store_at_user_address_enabled</a>(): bool <b>acquires</b> <a href="features.md#0x1_features_Features">Features</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_primary_apt_fungible_store_at_user_address_enabled">primary_apt_fungible_store_at_user_address_enabled</a>(): bool <b>acquires</b> <a href="features.md#0x1_features_Features">Features</a> {
     <a href="features.md#0x1_features_is_enabled">is_enabled</a>(<a href="features.md#0x1_features_PRIMARY_BOB_FUNGIBLE_STORE_AT_USER_ADDRESS">PRIMARY_BOB_FUNGIBLE_STORE_AT_USER_ADDRESS</a>)
 }
 </code></pre>
@@ -2954,13 +2989,13 @@ Deprecated feature
 
 </details>
 
-<a id="0x1_features_get_new_accounts_default_to_fa_bob_store_feature"></a>
+<a id="0x1_features_get_new_accounts_default_to_fa_apt_store_feature"></a>
 
-## Function `get_new_accounts_default_to_fa_bob_store_feature`
+## Function `get_new_accounts_default_to_fa_apt_store_feature`
 
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_new_accounts_default_to_fa_bob_store_feature">get_new_accounts_default_to_fa_bob_store_feature</a>(): u64
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_new_accounts_default_to_fa_apt_store_feature">get_new_accounts_default_to_fa_apt_store_feature</a>(): u64
 </code></pre>
 
 
@@ -2969,20 +3004,20 @@ Deprecated feature
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_new_accounts_default_to_fa_bob_store_feature">get_new_accounts_default_to_fa_bob_store_feature</a>(): u64 { <a href="features.md#0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE">NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE</a> }
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_new_accounts_default_to_fa_apt_store_feature">get_new_accounts_default_to_fa_apt_store_feature</a>(): u64 { <a href="features.md#0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE">NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE</a> }
 </code></pre>
 
 
 
 </details>
 
-<a id="0x1_features_new_accounts_default_to_fa_bob_store_enabled"></a>
+<a id="0x1_features_new_accounts_default_to_fa_apt_store_enabled"></a>
 
-## Function `new_accounts_default_to_fa_bob_store_enabled`
+## Function `new_accounts_default_to_fa_apt_store_enabled`
 
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_new_accounts_default_to_fa_bob_store_enabled">new_accounts_default_to_fa_bob_store_enabled</a>(): bool
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_new_accounts_default_to_fa_apt_store_enabled">new_accounts_default_to_fa_apt_store_enabled</a>(): bool
 </code></pre>
 
 
@@ -2991,7 +3026,7 @@ Deprecated feature
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_new_accounts_default_to_fa_bob_store_enabled">new_accounts_default_to_fa_bob_store_enabled</a>(): bool <b>acquires</b> <a href="features.md#0x1_features_Features">Features</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_new_accounts_default_to_fa_apt_store_enabled">new_accounts_default_to_fa_apt_store_enabled</a>(): bool <b>acquires</b> <a href="features.md#0x1_features_Features">Features</a> {
     <a href="features.md#0x1_features_is_enabled">is_enabled</a>(<a href="features.md#0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE">NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE</a>)
 }
 </code></pre>
@@ -3000,13 +3035,13 @@ Deprecated feature
 
 </details>
 
-<a id="0x1_features_get_operations_default_to_fa_bob_store_feature"></a>
+<a id="0x1_features_get_operations_default_to_fa_apt_store_feature"></a>
 
-## Function `get_operations_default_to_fa_bob_store_feature`
+## Function `get_operations_default_to_fa_apt_store_feature`
 
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_operations_default_to_fa_bob_store_feature">get_operations_default_to_fa_bob_store_feature</a>(): u64
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_operations_default_to_fa_apt_store_feature">get_operations_default_to_fa_apt_store_feature</a>(): u64
 </code></pre>
 
 
@@ -3015,20 +3050,20 @@ Deprecated feature
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_operations_default_to_fa_bob_store_feature">get_operations_default_to_fa_bob_store_feature</a>(): u64 { <a href="features.md#0x1_features_OPERATIONS_DEFAULT_TO_FA_BOB_STORE">OPERATIONS_DEFAULT_TO_FA_BOB_STORE</a> }
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_operations_default_to_fa_apt_store_feature">get_operations_default_to_fa_apt_store_feature</a>(): u64 { <a href="features.md#0x1_features_OPERATIONS_DEFAULT_TO_FA_BOB_STORE">OPERATIONS_DEFAULT_TO_FA_BOB_STORE</a> }
 </code></pre>
 
 
 
 </details>
 
-<a id="0x1_features_operations_default_to_fa_bob_store_enabled"></a>
+<a id="0x1_features_operations_default_to_fa_apt_store_enabled"></a>
 
-## Function `operations_default_to_fa_bob_store_enabled`
+## Function `operations_default_to_fa_apt_store_enabled`
 
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_operations_default_to_fa_bob_store_enabled">operations_default_to_fa_bob_store_enabled</a>(): bool
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_operations_default_to_fa_apt_store_enabled">operations_default_to_fa_apt_store_enabled</a>(): bool
 </code></pre>
 
 
@@ -3037,7 +3072,7 @@ Deprecated feature
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_operations_default_to_fa_bob_store_enabled">operations_default_to_fa_bob_store_enabled</a>(): bool <b>acquires</b> <a href="features.md#0x1_features_Features">Features</a> {
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_operations_default_to_fa_apt_store_enabled">operations_default_to_fa_apt_store_enabled</a>(): bool <b>acquires</b> <a href="features.md#0x1_features_Features">Features</a> {
     <a href="features.md#0x1_features_is_enabled">is_enabled</a>(<a href="features.md#0x1_features_OPERATIONS_DEFAULT_TO_FA_BOB_STORE">OPERATIONS_DEFAULT_TO_FA_BOB_STORE</a>)
 }
 </code></pre>
@@ -3269,6 +3304,144 @@ Deprecated feature
 
 <pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_is_collection_owner_enabled">is_collection_owner_enabled</a>(): bool <b>acquires</b> <a href="features.md#0x1_features_Features">Features</a> {
     <a href="features.md#0x1_features_is_enabled">is_enabled</a>(<a href="features.md#0x1_features_COLLECTION_OWNER">COLLECTION_OWNER</a>)
+}
+</code></pre>
+
+
+
+</details>
+
+<a id="0x1_features_get_native_memory_operations_feature"></a>
+
+## Function `get_native_memory_operations_feature`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_native_memory_operations_feature">get_native_memory_operations_feature</a>(): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_native_memory_operations_feature">get_native_memory_operations_feature</a>(): u64 { <a href="features.md#0x1_features_NATIVE_MEMORY_OPERATIONS">NATIVE_MEMORY_OPERATIONS</a> }
+</code></pre>
+
+
+
+</details>
+
+<a id="0x1_features_is_native_memory_operations_enabled"></a>
+
+## Function `is_native_memory_operations_enabled`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_is_native_memory_operations_enabled">is_native_memory_operations_enabled</a>(): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_is_native_memory_operations_enabled">is_native_memory_operations_enabled</a>(): bool <b>acquires</b> <a href="features.md#0x1_features_Features">Features</a> {
+    <a href="features.md#0x1_features_is_enabled">is_enabled</a>(<a href="features.md#0x1_features_NATIVE_MEMORY_OPERATIONS">NATIVE_MEMORY_OPERATIONS</a>)
+}
+</code></pre>
+
+
+
+</details>
+
+<a id="0x1_features_get_permissioned_signer_feature"></a>
+
+## Function `get_permissioned_signer_feature`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_permissioned_signer_feature">get_permissioned_signer_feature</a>(): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_permissioned_signer_feature">get_permissioned_signer_feature</a>(): u64 { <a href="features.md#0x1_features_PERMISSIONED_SIGNER">PERMISSIONED_SIGNER</a> }
+</code></pre>
+
+
+
+</details>
+
+<a id="0x1_features_is_permissioned_signer_enabled"></a>
+
+## Function `is_permissioned_signer_enabled`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_is_permissioned_signer_enabled">is_permissioned_signer_enabled</a>(): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_is_permissioned_signer_enabled">is_permissioned_signer_enabled</a>(): bool <b>acquires</b> <a href="features.md#0x1_features_Features">Features</a> {
+    <a href="features.md#0x1_features_is_enabled">is_enabled</a>(<a href="features.md#0x1_features_PERMISSIONED_SIGNER">PERMISSIONED_SIGNER</a>)
+}
+</code></pre>
+
+
+
+</details>
+
+<a id="0x1_features_get_account_abstraction_feature"></a>
+
+## Function `get_account_abstraction_feature`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_account_abstraction_feature">get_account_abstraction_feature</a>(): u64
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_get_account_abstraction_feature">get_account_abstraction_feature</a>(): u64 { <a href="features.md#0x1_features_ACCOUNT_ABSTRACTION">ACCOUNT_ABSTRACTION</a> }
+</code></pre>
+
+
+
+</details>
+
+<a id="0x1_features_is_account_abstraction_enabled"></a>
+
+## Function `is_account_abstraction_enabled`
+
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_is_account_abstraction_enabled">is_account_abstraction_enabled</a>(): bool
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_is_account_abstraction_enabled">is_account_abstraction_enabled</a>(): bool <b>acquires</b> <a href="features.md#0x1_features_Features">Features</a> {
+    <a href="features.md#0x1_features_is_enabled">is_enabled</a>(<a href="features.md#0x1_features_ACCOUNT_ABSTRACTION">ACCOUNT_ABSTRACTION</a>)
 }
 </code></pre>
 
@@ -3564,35 +3737,6 @@ Helper to check whether a feature flag is enabled.
 
 </details>
 
-<a id="0x1_features_change_feature_flags_for_verification"></a>
-
-## Function `change_feature_flags_for_verification`
-
-
-
-<pre><code>#[verify_only]
-<b>public</b> <b>fun</b> <a href="features.md#0x1_features_change_feature_flags_for_verification">change_feature_flags_for_verification</a>(framework: &<a href="signer.md#0x1_signer">signer</a>, enable: <a href="vector.md#0x1_vector">vector</a>&lt;u64&gt;, disable: <a href="vector.md#0x1_vector">vector</a>&lt;u64&gt;)
-</code></pre>
-
-
-
-<details>
-<summary>Implementation</summary>
-
-
-<pre><code><b>public</b> <b>fun</b> <a href="features.md#0x1_features_change_feature_flags_for_verification">change_feature_flags_for_verification</a>(
-    framework: &<a href="signer.md#0x1_signer">signer</a>,
-    enable: <a href="vector.md#0x1_vector">vector</a>&lt;u64&gt;,
-    disable: <a href="vector.md#0x1_vector">vector</a>&lt;u64&gt;
-) <b>acquires</b> <a href="features.md#0x1_features_Features">Features</a> {
-    <a href="features.md#0x1_features_change_feature_flags_internal">change_feature_flags_internal</a>(framework, enable, disable)
-}
-</code></pre>
-
-
-
-</details>
-
 <a id="@Specification_1"></a>
 
 ## Specification
@@ -3721,6 +3865,17 @@ Helper to check whether a feature flag is enabled.
 
 <pre><code><b>fun</b> <a href="features.md#0x1_features_spec_abort_if_multisig_payload_mismatch_enabled">spec_abort_if_multisig_payload_mismatch_enabled</a>(): bool {
    <a href="features.md#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.md#0x1_features_ABORT_IF_MULTISIG_PAYLOAD_MISMATCH">ABORT_IF_MULTISIG_PAYLOAD_MISMATCH</a>)
+}
+</code></pre>
+
+
+
+
+<a id="0x1_features_spec_new_accounts_default_to_fa_apt_store_enabled"></a>
+
+
+<pre><code><b>fun</b> <a href="features.md#0x1_features_spec_new_accounts_default_to_fa_apt_store_enabled">spec_new_accounts_default_to_fa_apt_store_enabled</a>(): bool {
+   <a href="features.md#0x1_features_spec_is_enabled">spec_is_enabled</a>(<a href="features.md#0x1_features_NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE">NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE</a>)
 }
 </code></pre>
 

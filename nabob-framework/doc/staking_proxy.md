@@ -5,6 +5,10 @@
 
 
 
+-  [Struct `StakeProxyPermission`](#0x1_staking_proxy_StakeProxyPermission)
+-  [Constants](#@Constants_0)
+-  [Function `check_stake_proxy_permission`](#0x1_staking_proxy_check_stake_proxy_permission)
+-  [Function `grant_permission`](#0x1_staking_proxy_grant_permission)
 -  [Function `set_operator`](#0x1_staking_proxy_set_operator)
 -  [Function `set_voter`](#0x1_staking_proxy_set_voter)
 -  [Function `set_vesting_contract_operator`](#0x1_staking_proxy_set_vesting_contract_operator)
@@ -13,20 +17,23 @@
 -  [Function `set_vesting_contract_voter`](#0x1_staking_proxy_set_vesting_contract_voter)
 -  [Function `set_staking_contract_voter`](#0x1_staking_proxy_set_staking_contract_voter)
 -  [Function `set_stake_pool_voter`](#0x1_staking_proxy_set_stake_pool_voter)
--  [Specification](#@Specification_0)
+-  [Specification](#@Specification_1)
     -  [High-level Requirements](#high-level-req)
     -  [Module-level Specification](#module-level-spec)
-    -  [Function `set_operator`](#@Specification_0_set_operator)
-    -  [Function `set_voter`](#@Specification_0_set_voter)
-    -  [Function `set_vesting_contract_operator`](#@Specification_0_set_vesting_contract_operator)
-    -  [Function `set_staking_contract_operator`](#@Specification_0_set_staking_contract_operator)
-    -  [Function `set_stake_pool_operator`](#@Specification_0_set_stake_pool_operator)
-    -  [Function `set_vesting_contract_voter`](#@Specification_0_set_vesting_contract_voter)
-    -  [Function `set_staking_contract_voter`](#@Specification_0_set_staking_contract_voter)
-    -  [Function `set_stake_pool_voter`](#@Specification_0_set_stake_pool_voter)
+    -  [Function `grant_permission`](#@Specification_1_grant_permission)
+    -  [Function `set_operator`](#@Specification_1_set_operator)
+    -  [Function `set_voter`](#@Specification_1_set_voter)
+    -  [Function `set_vesting_contract_operator`](#@Specification_1_set_vesting_contract_operator)
+    -  [Function `set_staking_contract_operator`](#@Specification_1_set_staking_contract_operator)
+    -  [Function `set_stake_pool_operator`](#@Specification_1_set_stake_pool_operator)
+    -  [Function `set_vesting_contract_voter`](#@Specification_1_set_vesting_contract_voter)
+    -  [Function `set_staking_contract_voter`](#@Specification_1_set_staking_contract_voter)
+    -  [Function `set_stake_pool_voter`](#@Specification_1_set_stake_pool_voter)
 
 
-<pre><code><b>use</b> <a href="../../move-stdlib/doc/signer.md#0x1_signer">0x1::signer</a>;
+<pre><code><b>use</b> <a href="../../nabob-stdlib/../move-stdlib/doc/error.md#0x1_error">0x1::error</a>;
+<b>use</b> <a href="permissioned_signer.md#0x1_permissioned_signer">0x1::permissioned_signer</a>;
+<b>use</b> <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">0x1::signer</a>;
 <b>use</b> <a href="stake.md#0x1_stake">0x1::stake</a>;
 <b>use</b> <a href="staking_contract.md#0x1_staking_contract">0x1::staking_contract</a>;
 <b>use</b> <a href="vesting.md#0x1_vesting">0x1::vesting</a>;
@@ -34,13 +41,56 @@
 
 
 
-<a id="0x1_staking_proxy_set_operator"></a>
+<a id="0x1_staking_proxy_StakeProxyPermission"></a>
 
-## Function `set_operator`
+## Struct `StakeProxyPermission`
 
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_operator">set_operator</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>)
+<pre><code><b>struct</b> <a href="staking_proxy.md#0x1_staking_proxy_StakeProxyPermission">StakeProxyPermission</a> <b>has</b> <b>copy</b>, drop, store
+</code></pre>
+
+
+
+<details>
+<summary>Fields</summary>
+
+
+<dl>
+<dt>
+<code>dummy_field: bool</code>
+</dt>
+<dd>
+
+</dd>
+</dl>
+
+
+</details>
+
+<a id="@Constants_0"></a>
+
+## Constants
+
+
+<a id="0x1_staking_proxy_ENO_STAKE_PERMISSION"></a>
+
+Signer does not have permission to perform stake proxy logic.
+
+
+<pre><code><b>const</b> <a href="staking_proxy.md#0x1_staking_proxy_ENO_STAKE_PERMISSION">ENO_STAKE_PERMISSION</a>: u64 = 28;
+</code></pre>
+
+
+
+<a id="0x1_staking_proxy_check_stake_proxy_permission"></a>
+
+## Function `check_stake_proxy_permission`
+
+Permissions
+
+
+<pre><code><b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_check_stake_proxy_permission">check_stake_proxy_permission</a>(s: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>)
 </code></pre>
 
 
@@ -49,7 +99,59 @@
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_operator">set_operator</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>) {
+<pre><code>inline <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_check_stake_proxy_permission">check_stake_proxy_permission</a>(s: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>) {
+    <b>assert</b>!(
+        <a href="permissioned_signer.md#0x1_permissioned_signer_check_permission_exists">permissioned_signer::check_permission_exists</a>(s, <a href="staking_proxy.md#0x1_staking_proxy_StakeProxyPermission">StakeProxyPermission</a> {}),
+        <a href="../../nabob-stdlib/../move-stdlib/doc/error.md#0x1_error_permission_denied">error::permission_denied</a>(<a href="staking_proxy.md#0x1_staking_proxy_ENO_STAKE_PERMISSION">ENO_STAKE_PERMISSION</a>),
+    );
+}
+</code></pre>
+
+
+
+</details>
+
+<a id="0x1_staking_proxy_grant_permission"></a>
+
+## Function `grant_permission`
+
+Grant permission to mutate staking on behalf of the master signer.
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_grant_permission">grant_permission</a>(master: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, <a href="permissioned_signer.md#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_grant_permission">grant_permission</a>(master: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, <a href="permissioned_signer.md#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>) {
+    <a href="permissioned_signer.md#0x1_permissioned_signer_authorize_unlimited">permissioned_signer::authorize_unlimited</a>(master, <a href="permissioned_signer.md#0x1_permissioned_signer">permissioned_signer</a>, <a href="staking_proxy.md#0x1_staking_proxy_StakeProxyPermission">StakeProxyPermission</a> {})
+}
+</code></pre>
+
+
+
+</details>
+
+<a id="0x1_staking_proxy_set_operator"></a>
+
+## Function `set_operator`
+
+
+
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_operator">set_operator</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>)
+</code></pre>
+
+
+
+<details>
+<summary>Implementation</summary>
+
+
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_operator">set_operator</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>) {
     <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_operator">set_vesting_contract_operator</a>(owner, old_operator, new_operator);
     <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_operator">set_staking_contract_operator</a>(owner, old_operator, new_operator);
     <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_operator">set_stake_pool_operator</a>(owner, new_operator);
@@ -66,7 +168,7 @@
 
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_voter">set_voter</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_voter">set_voter</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>)
 </code></pre>
 
 
@@ -75,7 +177,7 @@
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_voter">set_voter</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>) {
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_voter">set_voter</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>) {
     <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_voter">set_vesting_contract_voter</a>(owner, operator, new_voter);
     <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_voter">set_staking_contract_voter</a>(owner, operator, new_voter);
     <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_voter">set_stake_pool_voter</a>(owner, new_voter);
@@ -92,7 +194,7 @@
 
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_operator">set_vesting_contract_operator</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_operator">set_vesting_contract_operator</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>)
 </code></pre>
 
 
@@ -101,10 +203,11 @@
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_operator">set_vesting_contract_operator</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>) {
-    <b>let</b> owner_address = <a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_operator">set_vesting_contract_operator</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>) {
+    <a href="staking_proxy.md#0x1_staking_proxy_check_stake_proxy_permission">check_stake_proxy_permission</a>(owner);
+    <b>let</b> owner_address = <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>let</b> vesting_contracts = &<a href="vesting.md#0x1_vesting_vesting_contracts">vesting::vesting_contracts</a>(owner_address);
-    <a href="../../move-stdlib/doc/vector.md#0x1_vector_for_each_ref">vector::for_each_ref</a>(vesting_contracts, |vesting_contract| {
+    <a href="../../nabob-stdlib/../move-stdlib/doc/vector.md#0x1_vector_for_each_ref">vector::for_each_ref</a>(vesting_contracts, |vesting_contract| {
         <b>let</b> vesting_contract = *vesting_contract;
         <b>if</b> (<a href="vesting.md#0x1_vesting_operator">vesting::operator</a>(vesting_contract) == old_operator) {
             <b>let</b> current_commission_percentage = <a href="vesting.md#0x1_vesting_operator_commission_percentage">vesting::operator_commission_percentage</a>(vesting_contract);
@@ -124,7 +227,7 @@
 
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_operator">set_staking_contract_operator</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_operator">set_staking_contract_operator</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>)
 </code></pre>
 
 
@@ -133,8 +236,9 @@
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_operator">set_staking_contract_operator</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>) {
-    <b>let</b> owner_address = <a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_operator">set_staking_contract_operator</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>) {
+    <a href="staking_proxy.md#0x1_staking_proxy_check_stake_proxy_permission">check_stake_proxy_permission</a>(owner);
+    <b>let</b> owner_address = <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>if</b> (<a href="staking_contract.md#0x1_staking_contract_staking_contract_exists">staking_contract::staking_contract_exists</a>(owner_address, old_operator)) {
         <b>let</b> current_commission_percentage = <a href="staking_contract.md#0x1_staking_contract_commission_percentage">staking_contract::commission_percentage</a>(owner_address, old_operator);
         <a href="staking_contract.md#0x1_staking_contract_switch_operator">staking_contract::switch_operator</a>(owner, old_operator, new_operator, current_commission_percentage);
@@ -152,7 +256,7 @@
 
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_operator">set_stake_pool_operator</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, new_operator: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_operator">set_stake_pool_operator</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, new_operator: <b>address</b>)
 </code></pre>
 
 
@@ -161,8 +265,9 @@
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_operator">set_stake_pool_operator</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, new_operator: <b>address</b>) {
-    <b>let</b> owner_address = <a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_operator">set_stake_pool_operator</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, new_operator: <b>address</b>) {
+    <a href="staking_proxy.md#0x1_staking_proxy_check_stake_proxy_permission">check_stake_proxy_permission</a>(owner);
+    <b>let</b> owner_address = <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>if</b> (<a href="stake.md#0x1_stake_stake_pool_exists">stake::stake_pool_exists</a>(owner_address)) {
         <a href="stake.md#0x1_stake_set_operator">stake::set_operator</a>(owner, new_operator);
     };
@@ -179,7 +284,7 @@
 
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_voter">set_vesting_contract_voter</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_voter">set_vesting_contract_voter</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>)
 </code></pre>
 
 
@@ -188,10 +293,11 @@
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_voter">set_vesting_contract_voter</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>) {
-    <b>let</b> owner_address = <a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_voter">set_vesting_contract_voter</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>) {
+    <a href="staking_proxy.md#0x1_staking_proxy_check_stake_proxy_permission">check_stake_proxy_permission</a>(owner);
+    <b>let</b> owner_address = <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>let</b> vesting_contracts = &<a href="vesting.md#0x1_vesting_vesting_contracts">vesting::vesting_contracts</a>(owner_address);
-    <a href="../../move-stdlib/doc/vector.md#0x1_vector_for_each_ref">vector::for_each_ref</a>(vesting_contracts, |vesting_contract| {
+    <a href="../../nabob-stdlib/../move-stdlib/doc/vector.md#0x1_vector_for_each_ref">vector::for_each_ref</a>(vesting_contracts, |vesting_contract| {
         <b>let</b> vesting_contract = *vesting_contract;
         <b>if</b> (<a href="vesting.md#0x1_vesting_operator">vesting::operator</a>(vesting_contract) == operator) {
             <a href="vesting.md#0x1_vesting_update_voter">vesting::update_voter</a>(owner, vesting_contract, new_voter);
@@ -210,7 +316,7 @@
 
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_voter">set_staking_contract_voter</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_voter">set_staking_contract_voter</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>)
 </code></pre>
 
 
@@ -219,8 +325,9 @@
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_voter">set_staking_contract_voter</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>) {
-    <b>let</b> owner_address = <a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_voter">set_staking_contract_voter</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>) {
+    <a href="staking_proxy.md#0x1_staking_proxy_check_stake_proxy_permission">check_stake_proxy_permission</a>(owner);
+    <b>let</b> owner_address = <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>if</b> (<a href="staking_contract.md#0x1_staking_contract_staking_contract_exists">staking_contract::staking_contract_exists</a>(owner_address, operator)) {
         <a href="staking_contract.md#0x1_staking_contract_update_voter">staking_contract::update_voter</a>(owner, operator, new_voter);
     };
@@ -237,7 +344,7 @@
 
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_voter">set_stake_pool_voter</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, new_voter: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_voter">set_stake_pool_voter</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, new_voter: <b>address</b>)
 </code></pre>
 
 
@@ -246,8 +353,9 @@
 <summary>Implementation</summary>
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_voter">set_stake_pool_voter</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, new_voter: <b>address</b>) {
-    <b>if</b> (<a href="stake.md#0x1_stake_stake_pool_exists">stake::stake_pool_exists</a>(<a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner))) {
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_voter">set_stake_pool_voter</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, new_voter: <b>address</b>) {
+    <a href="staking_proxy.md#0x1_staking_proxy_check_stake_proxy_permission">check_stake_proxy_permission</a>(owner);
+    <b>if</b> (<a href="stake.md#0x1_stake_stake_pool_exists">stake::stake_pool_exists</a>(<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner))) {
         <a href="stake.md#0x1_stake_set_delegated_voter">stake::set_delegated_voter</a>(owner, new_voter);
     };
 }
@@ -257,7 +365,7 @@
 
 </details>
 
-<a id="@Specification_0"></a>
+<a id="@Specification_1"></a>
 
 ## Specification
 
@@ -310,7 +418,7 @@
 <td>Staking Contract's operators should be unique inside a store.</td>
 <td>Medium</td>
 <td>Duplicates among operators could result in incorrectly updating the operator or voter associated with the incorrect StakingContract.</td>
-<td>Enforced via <a href="https://github.com/nabob-labs/nabob/blob/main/nabob-move/framework/nabob-framework/sources/staking_contract.move#L87">SimpleMap</a>.</td>
+<td>Enforced via <a href="https://github.com/nabob-labs/nabob-core/blob/main/nabob-move/framework/nabob-framework/sources/staking_contract.move#L87">SimpleMap</a>.</td>
 </tr>
 
 </table>
@@ -324,17 +432,36 @@
 
 
 <pre><code><b>pragma</b> verify = <b>true</b>;
-<b>pragma</b> aborts_if_is_strict;
+<b>pragma</b> aborts_if_is_partial;
 </code></pre>
 
 
 
-<a id="@Specification_0_set_operator"></a>
+<a id="@Specification_1_grant_permission"></a>
+
+### Function `grant_permission`
+
+
+<pre><code><b>public</b> <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_grant_permission">grant_permission</a>(master: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, <a href="permissioned_signer.md#0x1_permissioned_signer">permissioned_signer</a>: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>)
+</code></pre>
+
+
+
+
+<pre><code><b>pragma</b> aborts_if_is_partial;
+<b>aborts_if</b> !<a href="permissioned_signer.md#0x1_permissioned_signer_spec_is_permissioned_signer">permissioned_signer::spec_is_permissioned_signer</a>(<a href="permissioned_signer.md#0x1_permissioned_signer">permissioned_signer</a>);
+<b>aborts_if</b> <a href="permissioned_signer.md#0x1_permissioned_signer_spec_is_permissioned_signer">permissioned_signer::spec_is_permissioned_signer</a>(master);
+<b>aborts_if</b> <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(master) != <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(<a href="permissioned_signer.md#0x1_permissioned_signer">permissioned_signer</a>);
+</code></pre>
+
+
+
+<a id="@Specification_1_set_operator"></a>
 
 ### Function `set_operator`
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_operator">set_operator</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_operator">set_operator</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>)
 </code></pre>
 
 
@@ -349,12 +476,12 @@ Aborts if conditions of SetStakePoolOperator are not met
 
 
 
-<a id="@Specification_0_set_voter"></a>
+<a id="@Specification_1_set_voter"></a>
 
 ### Function `set_voter`
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_voter">set_voter</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_voter">set_voter</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>)
 </code></pre>
 
 
@@ -362,18 +489,19 @@ Aborts if conditions of SetStackingContractVoter and SetStackPoolVoterAbortsIf a
 
 
 <pre><code><b>pragma</b> aborts_if_is_partial;
+<b>pragma</b> verify_duration_estimate = 120;
 <b>include</b> <a href="staking_proxy.md#0x1_staking_proxy_SetStakingContractVoter">SetStakingContractVoter</a>;
 <b>include</b> <a href="staking_proxy.md#0x1_staking_proxy_SetStakePoolVoterAbortsIf">SetStakePoolVoterAbortsIf</a>;
 </code></pre>
 
 
 
-<a id="@Specification_0_set_vesting_contract_operator"></a>
+<a id="@Specification_1_set_vesting_contract_operator"></a>
 
 ### Function `set_vesting_contract_operator`
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_operator">set_vesting_contract_operator</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_operator">set_vesting_contract_operator</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>)
 </code></pre>
 
 
@@ -384,12 +512,12 @@ Aborts if conditions of SetStackingContractVoter and SetStackPoolVoterAbortsIf a
 
 
 
-<a id="@Specification_0_set_staking_contract_operator"></a>
+<a id="@Specification_1_set_staking_contract_operator"></a>
 
 ### Function `set_staking_contract_operator`
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_operator">set_staking_contract_operator</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_operator">set_staking_contract_operator</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, old_operator: <b>address</b>, new_operator: <b>address</b>)
 </code></pre>
 
 
@@ -407,10 +535,10 @@ Aborts if conditions of SetStackingContractVoter and SetStackPoolVoterAbortsIf a
 
 
 <pre><code><b>schema</b> <a href="staking_proxy.md#0x1_staking_proxy_SetStakingContractOperator">SetStakingContractOperator</a> {
-    owner: <a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>;
+    owner: <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>;
     old_operator: <b>address</b>;
     new_operator: <b>address</b>;
-    <b>let</b> owner_address = <a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
+    <b>let</b> owner_address = <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>let</b> store = <b>global</b>&lt;Store&gt;(owner_address);
     <b>let</b> staking_contract_exists = <b>exists</b>&lt;Store&gt;(owner_address) && <a href="../../nabob-stdlib/doc/simple_map.md#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(store.staking_contracts, old_operator);
     <b>aborts_if</b> staking_contract_exists && <a href="../../nabob-stdlib/doc/simple_map.md#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(store.staking_contracts, new_operator);
@@ -438,12 +566,12 @@ Aborts if conditions of SetStackingContractVoter and SetStackPoolVoterAbortsIf a
 
 
 
-<a id="@Specification_0_set_stake_pool_operator"></a>
+<a id="@Specification_1_set_stake_pool_operator"></a>
 
 ### Function `set_stake_pool_operator`
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_operator">set_stake_pool_operator</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, new_operator: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_operator">set_stake_pool_operator</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, new_operator: <b>address</b>)
 </code></pre>
 
 
@@ -452,6 +580,12 @@ One of them are not exists
 
 
 <pre><code><b>include</b> <a href="staking_proxy.md#0x1_staking_proxy_SetStakePoolOperator">SetStakePoolOperator</a>;
+<b>include</b> <a href="staking_proxy.md#0x1_staking_proxy_AbortsIfSignerPermissionStakeProxy">AbortsIfSignerPermissionStakeProxy</a> {
+    s: owner
+};
+<b>include</b> <b>exists</b>&lt;<a href="stake.md#0x1_stake_StakePool">stake::StakePool</a>&gt;(<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner)) ==&gt; <a href="stake.md#0x1_stake_AbortsIfSignerPermissionStake">stake::AbortsIfSignerPermissionStake</a> {
+    s:owner
+};
 </code></pre>
 
 
@@ -461,9 +595,12 @@ One of them are not exists
 
 
 <pre><code><b>schema</b> <a href="staking_proxy.md#0x1_staking_proxy_SetStakePoolOperator">SetStakePoolOperator</a> {
-    owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>;
+    owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>;
     new_operator: <b>address</b>;
-    <b>let</b> owner_address = <a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
+    <b>include</b> <a href="staking_proxy.md#0x1_staking_proxy_AbortsIfSignerPermissionStakeProxy">AbortsIfSignerPermissionStakeProxy</a> {
+        s: owner
+    };
+    <b>let</b> owner_address = <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>let</b> ownership_cap = <b>borrow_global</b>&lt;<a href="stake.md#0x1_stake_OwnerCapability">stake::OwnerCapability</a>&gt;(owner_address);
     <b>let</b> pool_address = ownership_cap.pool_address;
     <b>aborts_if</b> <a href="stake.md#0x1_stake_stake_pool_exists">stake::stake_pool_exists</a>(owner_address) && !(<b>exists</b>&lt;<a href="stake.md#0x1_stake_OwnerCapability">stake::OwnerCapability</a>&gt;(owner_address) && <a href="stake.md#0x1_stake_stake_pool_exists">stake::stake_pool_exists</a>(pool_address));
@@ -473,12 +610,12 @@ One of them are not exists
 
 
 
-<a id="@Specification_0_set_vesting_contract_voter"></a>
+<a id="@Specification_1_set_vesting_contract_voter"></a>
 
 ### Function `set_vesting_contract_voter`
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_voter">set_vesting_contract_voter</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_vesting_contract_voter">set_vesting_contract_voter</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>)
 </code></pre>
 
 
@@ -489,18 +626,21 @@ One of them are not exists
 
 
 
-<a id="@Specification_0_set_staking_contract_voter"></a>
+<a id="@Specification_1_set_staking_contract_voter"></a>
 
 ### Function `set_staking_contract_voter`
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_voter">set_staking_contract_voter</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_staking_contract_voter">set_staking_contract_voter</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, operator: <b>address</b>, new_voter: <b>address</b>)
 </code></pre>
 
 
 
 
 <pre><code><b>include</b> <a href="staking_proxy.md#0x1_staking_proxy_SetStakingContractVoter">SetStakingContractVoter</a>;
+<b>include</b> <a href="staking_proxy.md#0x1_staking_proxy_AbortsIfSignerPermissionStakeProxy">AbortsIfSignerPermissionStakeProxy</a> {
+    s: owner
+};
 </code></pre>
 
 
@@ -512,10 +652,10 @@ Then abort if the resource is not exist
 
 
 <pre><code><b>schema</b> <a href="staking_proxy.md#0x1_staking_proxy_SetStakingContractVoter">SetStakingContractVoter</a> {
-    owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>;
+    owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>;
     operator: <b>address</b>;
     new_voter: <b>address</b>;
-    <b>let</b> owner_address = <a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
+    <b>let</b> owner_address = <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>let</b> staker = owner_address;
     <b>let</b> store = <b>global</b>&lt;Store&gt;(staker);
     <b>let</b> staking_contract_exists = <b>exists</b>&lt;Store&gt;(staker) && <a href="../../nabob-stdlib/doc/simple_map.md#0x1_simple_map_spec_contains_key">simple_map::spec_contains_key</a>(store.staking_contracts, operator);
@@ -531,18 +671,24 @@ Then abort if the resource is not exist
 
 
 
-<a id="@Specification_0_set_stake_pool_voter"></a>
+<a id="@Specification_1_set_stake_pool_voter"></a>
 
 ### Function `set_stake_pool_voter`
 
 
-<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_voter">set_stake_pool_voter</a>(owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>, new_voter: <b>address</b>)
+<pre><code><b>public</b> entry <b>fun</b> <a href="staking_proxy.md#0x1_staking_proxy_set_stake_pool_voter">set_stake_pool_voter</a>(owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>, new_voter: <b>address</b>)
 </code></pre>
 
 
 
 
 <pre><code><b>include</b> <a href="staking_proxy.md#0x1_staking_proxy_SetStakePoolVoterAbortsIf">SetStakePoolVoterAbortsIf</a>;
+<b>include</b> <a href="staking_proxy.md#0x1_staking_proxy_AbortsIfSignerPermissionStakeProxy">AbortsIfSignerPermissionStakeProxy</a> {
+    s: owner
+};
+<b>include</b> <b>exists</b>&lt;<a href="stake.md#0x1_stake_StakePool">stake::StakePool</a>&gt;(<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner)) ==&gt; <a href="stake.md#0x1_stake_AbortsIfSignerPermissionStake">stake::AbortsIfSignerPermissionStake</a> {
+    s:owner
+};
 </code></pre>
 
 
@@ -552,13 +698,29 @@ Then abort if the resource is not exist
 
 
 <pre><code><b>schema</b> <a href="staking_proxy.md#0x1_staking_proxy_SetStakePoolVoterAbortsIf">SetStakePoolVoterAbortsIf</a> {
-    owner: &<a href="../../move-stdlib/doc/signer.md#0x1_signer">signer</a>;
+    owner: &<a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>;
     new_voter: <b>address</b>;
-    <b>let</b> owner_address = <a href="../../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
+    <b>include</b> <a href="staking_proxy.md#0x1_staking_proxy_AbortsIfSignerPermissionStakeProxy">AbortsIfSignerPermissionStakeProxy</a> {
+        s: owner
+    };
+    <b>let</b> owner_address = <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer_address_of">signer::address_of</a>(owner);
     <b>let</b> ownership_cap = <b>global</b>&lt;<a href="stake.md#0x1_stake_OwnerCapability">stake::OwnerCapability</a>&gt;(owner_address);
     <b>let</b> pool_address = ownership_cap.pool_address;
     <b>aborts_if</b> <a href="stake.md#0x1_stake_stake_pool_exists">stake::stake_pool_exists</a>(owner_address) && !(<b>exists</b>&lt;<a href="stake.md#0x1_stake_OwnerCapability">stake::OwnerCapability</a>&gt;(owner_address) && <a href="stake.md#0x1_stake_stake_pool_exists">stake::stake_pool_exists</a>(pool_address));
     <b>ensures</b> <a href="stake.md#0x1_stake_stake_pool_exists">stake::stake_pool_exists</a>(owner_address) ==&gt; <b>global</b>&lt;<a href="stake.md#0x1_stake_StakePool">stake::StakePool</a>&gt;(pool_address).delegated_voter == new_voter;
+}
+</code></pre>
+
+
+
+
+<a id="0x1_staking_proxy_AbortsIfSignerPermissionStakeProxy"></a>
+
+
+<pre><code><b>schema</b> <a href="staking_proxy.md#0x1_staking_proxy_AbortsIfSignerPermissionStakeProxy">AbortsIfSignerPermissionStakeProxy</a> {
+    s: <a href="../../nabob-stdlib/../move-stdlib/doc/signer.md#0x1_signer">signer</a>;
+    <b>let</b> perm = <a href="staking_proxy.md#0x1_staking_proxy_StakeProxyPermission">StakeProxyPermission</a> {};
+    <b>aborts_if</b> !<a href="permissioned_signer.md#0x1_permissioned_signer_spec_check_permission_exists">permissioned_signer::spec_check_permission_exists</a>(s, perm);
 }
 </code></pre>
 

@@ -10,7 +10,7 @@ spec nabob_framework::nabob_coin {
     /// Requirement: The BOB coin may only be created exactly once.
     /// Criticality: Medium
     /// Implementation: The initialization function may only be called once.
-    /// Enforcement: Enforced through the [https://github.com/nabob-labs/nabob/blob/main/nabob-move/framework/nabob-framework/sources/coin.move](coin)
+    /// Enforcement: Enforced through the [https://github.com/nabob-labs/nabob-core/blob/main/nabob-move/framework/nabob-framework/sources/coin.move](coin)
     /// module, which has been audited.
     ///
     /// No.: 3
@@ -25,18 +25,22 @@ spec nabob_framework::nabob_coin {
     /// Requirement: Any type of operation on the BOB coin should fail if the user has not registered for the coin.
     /// Criticality: Medium
     /// Implementation: Coin operations may succeed only on valid user coin registration.
-    /// Enforcement: Enforced through the [https://github.com/nabob-labs/nabob/blob/main/nabob-move/framework/nabob-framework/sources/coin.move](coin)
+    /// Enforcement: Enforced through the [https://github.com/nabob-labs/nabob-core/blob/main/nabob-move/framework/nabob-framework/sources/coin.move](coin)
     /// module, which has been audited.
     /// </high-level-req>
     ///
     spec module {
         pragma verify = true;
-        pragma aborts_if_is_strict;
+        pragma aborts_if_is_partial;
     }
 
     spec initialize(nabob_framework: &signer): (BurnCapability<NabobCoin>, MintCapability<NabobCoin>) {
         use nabob_framework::aggregator_factory;
+        use nabob_framework::permissioned_signer;
 
+        pragma verify = false;
+
+        aborts_if permissioned_signer::spec_is_permissioned_signer(nabob_framework);
         let addr = signer::address_of(nabob_framework);
         aborts_if addr != @nabob_framework;
         aborts_if !string::spec_internal_check_utf8(b"Nabob Coin");

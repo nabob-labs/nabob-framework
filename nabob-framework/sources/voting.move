@@ -34,6 +34,7 @@ module nabob_framework::voting {
 
     use nabob_framework::account;
     use nabob_framework::event::{Self, EventHandle};
+    use nabob_framework::permissioned_signer;
     use nabob_framework::timestamp;
     use nabob_framework::transaction_context;
     use nabob_std::from_bcs;
@@ -63,6 +64,8 @@ module nabob_framework::voting {
     const ESINGLE_STEP_PROPOSAL_CANNOT_HAVE_NEXT_EXECUTION_HASH: u64 = 11;
     /// Cannot call `is_multi_step_proposal_in_execution()` on single-step proposals.
     const EPROPOSAL_IS_SINGLE_STEP: u64 = 12;
+    /// Cannot call `is_multi_step_proposal_in_execution()` on single-step proposals.
+    const ENO_VOTE_PERMISSION: u64 = 13;
 
     /// ProposalStateEnum representing proposal state.
     const PROPOSAL_STATE_PENDING: u64 = 0;
@@ -188,7 +191,23 @@ module nabob_framework::voting {
         num_votes: u64,
     }
 
+    struct VotePermission has copy, drop, store {}
+
+    /// Permissions
+    inline fun check_vote_permission(s: &signer) {
+        assert!(
+            permissioned_signer::check_permission_exists(s, VotePermission {}),
+            error::permission_denied(ENO_VOTE_PERMISSION),
+        );
+    }
+
+    /// Grant permission to vote on behalf of the master signer.
+    public fun grant_permission(master: &signer, permissioned_signer: &signer) {
+        permissioned_signer::authorize_unlimited(master, permissioned_signer, VotePermission {})
+    }
+
     public fun register<ProposalType: store>(account: &signer) {
+        check_vote_permission(account);
         let addr = signer::address_of(account);
         assert!(!exists<VotingForum<ProposalType>>(addr), error::already_exists(EVOTING_FORUM_ALREADY_REGISTERED));
 

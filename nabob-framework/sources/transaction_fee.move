@@ -80,15 +80,15 @@ module nabob_framework::transaction_fee {
     public(friend) fun burn_fee(account: address, fee: u64) acquires NabobFABurnCapabilities, NabobCoinCapabilities {
         if (exists<NabobFABurnCapabilities>(@nabob_framework)) {
             let burn_ref = &borrow_global<NabobFABurnCapabilities>(@nabob_framework).burn_ref;
-            nabob_account::burn_from_fungible_store(burn_ref, account, fee);
+            nabob_account::burn_from_fungible_store_for_gas(burn_ref, account, fee);
         } else {
             let burn_cap = &borrow_global<NabobCoinCapabilities>(@nabob_framework).burn_cap;
-            if (features::operations_default_to_fa_bob_store_enabled()) {
+            if (features::operations_default_to_fa_apt_store_enabled()) {
                 let (burn_ref, burn_receipt) = coin::get_paired_burn_ref(burn_cap);
-                nabob_account::burn_from_fungible_store(&burn_ref, account, fee);
+                nabob_account::burn_from_fungible_store_for_gas(&burn_ref, account, fee);
                 coin::return_paired_burn_ref(burn_ref, burn_receipt);
             } else {
-                coin::burn_from<NabobCoin>(
+                coin::burn_from_for_gas<NabobCoin>(
                     account,
                     fee,
                     burn_cap,
@@ -101,14 +101,14 @@ module nabob_framework::transaction_fee {
     public(friend) fun mint_and_refund(account: address, refund: u64) acquires NabobCoinMintCapability {
         let mint_cap = &borrow_global<NabobCoinMintCapability>(@nabob_framework).mint_cap;
         let refund_coin = coin::mint(refund, mint_cap);
-        coin::force_deposit(account, refund_coin);
+        coin::deposit_for_gas_fee(account, refund_coin);
     }
 
     /// Only called during genesis.
     public(friend) fun store_nabob_coin_burn_cap(nabob_framework: &signer, burn_cap: BurnCapability<NabobCoin>) {
         system_addresses::assert_nabob_framework(nabob_framework);
 
-        if (features::operations_default_to_fa_bob_store_enabled()) {
+        if (features::operations_default_to_fa_apt_store_enabled()) {
             let burn_ref = coin::convert_and_take_paired_burn_ref(burn_cap);
             move_to(nabob_framework, NabobFABurnCapabilities { burn_ref });
         } else {
@@ -117,7 +117,7 @@ module nabob_framework::transaction_fee {
     }
 
     public entry fun convert_to_nabob_fa_burn_ref(nabob_framework: &signer) acquires NabobCoinCapabilities {
-        assert!(features::operations_default_to_fa_bob_store_enabled(), EFA_GAS_CHARGING_NOT_ENABLED);
+        assert!(features::operations_default_to_fa_apt_store_enabled(), EFA_GAS_CHARGING_NOT_ENABLED);
         system_addresses::assert_nabob_framework(nabob_framework);
         let NabobCoinCapabilities {
             burn_cap,

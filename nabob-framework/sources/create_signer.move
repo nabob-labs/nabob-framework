@@ -14,8 +14,11 @@ module nabob_framework::create_signer {
     friend nabob_framework::coin;
     friend nabob_framework::fungible_asset;
     friend nabob_framework::genesis;
+    friend nabob_framework::account_abstraction;
     friend nabob_framework::multisig_account;
     friend nabob_framework::object;
+    friend nabob_framework::permissioned_signer;
+    friend nabob_framework::transaction_validation;
 
     public(friend) native fun create_signer(addr: address): signer;
 }
