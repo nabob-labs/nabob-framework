@@ -55,7 +55,7 @@ module nabob_framework::nabob_account {
 
     public entry fun create_account(auth_key: address) {
         let account_signer = account::create_account(auth_key);
-        register_apt(&account_signer);
+        register_bob(&account_signer);
     }
 
     /// Batch version of BOB transfer.
@@ -79,7 +79,7 @@ module nabob_framework::nabob_account {
             create_account(to)
         };
 
-        if (features::operations_default_to_fa_apt_store_enabled()) {
+        if (features::operations_default_to_fa_bob_store_enabled()) {
             fungible_transfer_only(source, to, amount)
         } else {
             // Resource accounts can be created without registering them to receive BOB.
@@ -171,7 +171,7 @@ module nabob_framework::nabob_account {
         assert!(account::exists_at(addr), error::not_found(EACCOUNT_NOT_FOUND));
     }
 
-    public fun assert_account_is_registered_for_apt(addr: address) {
+    public fun assert_account_is_registered_for_bob(addr: address) {
         assert_account_exists(addr);
         assert!(coin::is_account_registered<NabobCoin>(addr), error::not_found(EACCOUNT_NOT_REGISTERED_FOR_BOB));
     }
@@ -221,8 +221,8 @@ module nabob_framework::nabob_account {
             borrow_global<DirectTransferConfig>(account).allow_arbitrary_coin_transfers
     }
 
-    public(friend) fun register_apt(account_signer: &signer) {
-        if (features::new_accounts_default_to_fa_apt_store_enabled()) {
+    public(friend) fun register_bob(account_signer: &signer) {
+        if (features::new_accounts_default_to_fa_bob_store_enabled()) {
             ensure_primary_fungible_store_exists(signer::address_of(account_signer));
         } else {
             coin::register<NabobCoin>(account_signer);
@@ -328,7 +328,7 @@ module nabob_framework::nabob_account {
 
         let perm_handle = permissioned_signer::create_permissioned_handle(alice);
         let alice_perm_signer = permissioned_signer::signer_from_permissioned_handle(&perm_handle);
-        primary_fungible_store::grant_apt_permission(alice, &alice_perm_signer, 500);
+        primary_fungible_store::grant_bob_permission(alice, &alice_perm_signer, 500);
 
         transfer(&alice_perm_signer, bob, 500);
 
@@ -494,13 +494,13 @@ module nabob_framework::nabob_account {
         use nabob_framework::fungible_asset::Metadata;
         use nabob_framework::nabob_coin;
 
-        nabob_coin::ensure_initialized_with_apt_fa_metadata_for_test();
+        nabob_coin::ensure_initialized_with_bob_fa_metadata_for_test();
 
-        let apt_metadata = object::address_to_object<Metadata>(@nabob_fungible_asset);
+        let bob_metadata = object::address_to_object<Metadata>(@nabob_fungible_asset);
         let user_addr = signer::address_of(user);
-        assert!(primary_fungible_store_address(user_addr) == primary_fungible_store::primary_store_address(user_addr, apt_metadata), 1);
+        assert!(primary_fungible_store_address(user_addr) == primary_fungible_store::primary_store_address(user_addr, bob_metadata), 1);
 
         ensure_primary_fungible_store_exists(user_addr);
-        assert!(primary_fungible_store::primary_store_exists(user_addr, apt_metadata), 2);
+        assert!(primary_fungible_store::primary_store_exists(user_addr, bob_metadata), 2);
     }
 }

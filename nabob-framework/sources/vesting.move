@@ -45,7 +45,7 @@ module nabob_framework::vesting {
     use nabob_std::simple_map::{Self, SimpleMap};
 
     use nabob_framework::account::{Self, SignerCapability, new_event_handle};
-    use nabob_framework::nabob_account::{Self, assert_account_is_registered_for_apt};
+    use nabob_framework::nabob_account::{Self, assert_account_is_registered_for_bob};
     use nabob_framework::nabob_coin::NabobCoin;
     use nabob_framework::coin::{Self, Coin};
     use nabob_framework::event::{EventHandle, emit, emit_event};
@@ -559,7 +559,7 @@ module nabob_framework::vesting {
             !system_addresses::is_reserved_address(withdrawal_address),
             error::invalid_argument(EINVALID_WITHDRAWAL_ADDRESS),
         );
-        assert_account_is_registered_for_apt(withdrawal_address);
+        assert_account_is_registered_for_bob(withdrawal_address);
         assert!(vector::length(shareholders) > 0, error::invalid_argument(ENO_SHAREHOLDERS));
         assert!(
             simple_map::length(&buy_ins) == vector::length(shareholders),
@@ -1028,7 +1028,7 @@ module nabob_framework::vesting {
     ) acquires VestingContract {
         // Verify that the beneficiary account is set up to receive BOB. This is a requirement so distribute() wouldn't
         // fail and block all other accounts from receiving BOB if one beneficiary is not registered.
-        assert_account_is_registered_for_apt(new_beneficiary);
+        assert_account_is_registered_for_bob(new_beneficiary);
 
         let vesting_contract = borrow_global_mut<VestingContract>(contract_address);
         verify_admin(admin, vesting_contract);

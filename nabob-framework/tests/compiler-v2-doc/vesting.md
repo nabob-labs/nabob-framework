@@ -3423,7 +3423,7 @@ This address should be deterministic for the same admin and vesting contract cre
 <td>The shareholders should be able to start vesting only after the vesting cliff and the first vesting period have transpired.</td>
 <td>High</td>
 <td>The end of the vesting cliff is stored under VestingContract.vesting_schedule.start_timestamp_secs. The vest function always checks that timestamp::now_seconds is greater or equal to the end of the vesting cliff period.</td>
-<td>Audited the check for the end of vesting cliff: <a href="https://github.com/nabob-labs/nabob-core/blob/main/nabob-move/framework/nabob-framework/sources/vesting.move#L566">vest</a> module.</td>
+<td>Audited the check for the end of vesting cliff: <a href="https://github.com/nabob-labs/nabob/blob/main/mos/framework/nabob-framework/sources/vesting.move#L566">vest</a> module.</td>
 </tr>
 
 <tr>
@@ -3468,9 +3468,9 @@ This address should be deterministic for the same admin and vesting contract cre
 
 <tr>
 <td>10</td>
-<td>A new vesting contract should not be allowed to have an empty list of shareholders, have a different amount of shareholders than buy-ins, and provide a withdrawal address which is either reserved or not registered for apt.</td>
+<td>A new vesting contract should not be allowed to have an empty list of shareholders, have a different amount of shareholders than buy-ins, and provide a withdrawal address which is either reserved or not registered for bob.</td>
 <td>High</td>
-<td>The create_vesting_contract function ensures that the withdrawal_address is not a reserved address, that it is registered for apt, that the list of shareholders is non-empty, and that the amount of shareholders matches the amount of buy_ins.</td>
+<td>The create_vesting_contract function ensures that the withdrawal_address is not a reserved address, that it is registered for bob, that the list of shareholders is non-empty, and that the amount of shareholders matches the amount of buy_ins.</td>
 <td>Formally verified via <a href="#high-level-req-10">create_vesting_contract</a>.</td>
 </tr>
 

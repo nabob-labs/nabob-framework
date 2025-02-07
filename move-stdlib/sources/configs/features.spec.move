@@ -96,7 +96,7 @@ spec std::features {
         spec_is_enabled(ABORT_IF_MULTISIG_PAYLOAD_MISMATCH)
     }
 
-    spec fun spec_new_accounts_default_to_fa_apt_store_enabled(): bool {
+    spec fun spec_new_accounts_default_to_fa_bob_store_enabled(): bool {
         spec_is_enabled(NEW_ACCOUNTS_DEFAULT_TO_FA_BOB_STORE)
     }
 
