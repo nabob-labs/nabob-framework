@@ -418,7 +418,7 @@ Grant permission to mutate staking on behalf of the master signer.
 <td>Staking Contract's operators should be unique inside a store.</td>
 <td>Medium</td>
 <td>Duplicates among operators could result in incorrectly updating the operator or voter associated with the incorrect StakingContract.</td>
-<td>Enforced via <a href="https://github.com/nabob-labs/nabob/blob/main/mos/framework/nabob-framework/sources/staking_contract.move#L87">SimpleMap</a>.</td>
+<td>Enforced via <a href="https://github.com/nabob-labs/nabob-core/blob/main/nabob-move/framework/nabob-framework/sources/staking_contract.move#L87">SimpleMap</a>.</td>
 </tr>
 
 </table>

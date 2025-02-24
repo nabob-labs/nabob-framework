@@ -1,4 +1,4 @@
-// Copyright © Nabob Foundation
+// Copyright © Nabob Labs
 // SPDX-License-Identifier: Apache-2.0
 
 //! Implementation of native functions for memory manipulation.

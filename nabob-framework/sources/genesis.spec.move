@@ -108,6 +108,10 @@ spec nabob_framework::genesis {
         ensures exists<transaction_fee::NabobCoinCapabilities>(@nabob_framework);
     }
 
+    spec initialize_validator {
+        pragma verify_duration_estimate = 120;
+    }
+
     spec create_initialize_validators_with_commission {
         pragma verify_duration_estimate = 120;
 
